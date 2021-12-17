@@ -253,7 +253,8 @@ func TestRemoveUserFromGroupTwice(t *testing.T) {
 	failOnError("Removing user from group failed", err, t)
 }
 
-// Test that we can remove a user from their default group
+// Test that we can remove a user from their default group, and still have access to an object they
+// created.
 func TestRemoveUserFromDefaultGroup(t *testing.T) {
 	client, err := coreclient.NewClient(context.Background(), endpoint, certPath)
 	failOnError("Could not create client", err, t)
@@ -285,5 +286,5 @@ func TestRemoveUserFromDefaultGroup(t *testing.T) {
 
 	// They should be unable to access the object
 	_, err = client.Retrieve(oid)
-	failOnSuccess("Expected retrieving object to fail", err, t)
+	failOnError("Expected retrieving object to succeed", err, t)
 }
