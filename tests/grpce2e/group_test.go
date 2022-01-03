@@ -284,7 +284,7 @@ func TestRemoveUserFromDefaultGroup(t *testing.T) {
 	err = client.RemoveUserFromGroup(uid2, uid2)
 	failOnError("Removing user from group failed", err, t)
 
-	// They should be unable to access the object
+	// They should be able to access the object
 	_, err = client.Retrieve(oid)
 	failOnError("Expected retrieving object to succeed", err, t)
 }
