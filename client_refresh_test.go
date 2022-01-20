@@ -16,6 +16,7 @@ package client
 
 import (
 	"testing"
+	"time"
 
 	"context"
 )
@@ -184,6 +185,35 @@ func TestPermissionsWR(t *testing.T) {
 	}
 
 	err = c.RemovePermission(storeResponse.ObjectID, createUserResponse.UserID)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestTokenRefreshWR(t *testing.T) {
+	c, err := NewClientWR(context.Background(), endpoint, certPath, uid, password)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer c.Close()
+
+	createUserResponse, err := c.CreateUser(scopes)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = c.LoginUser(createUserResponse.UserID, createUserResponse.Password)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Make sure logic refreshing token is triggered and clear token
+	// to see error if token is not refreshed
+	c.tokenExpiration = time.Now().Add(time.Duration(-1) * time.Hour)
+	c.authHeader = nil
+
+	plaintext := []byte("foo")
+	associatedData := []byte("bar")
+	_, err = c.Store(plaintext, associatedData)
 	if err != nil {
 		t.Fatal(err)
 	}

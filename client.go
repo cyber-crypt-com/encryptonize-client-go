@@ -19,7 +19,9 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/fullstorydev/grpcurl"
 	"github.com/jhump/protoreflect/grpcreflect"
@@ -31,11 +33,12 @@ import (
 
 // Client for making gRPC calls to the Encryptonize service.
 type Client struct {
-	connection *grpc.ClientConn
-	refClient  *grpcreflect.Client
-	ctx        context.Context
-	reflSource grpcurl.DescriptorSource
-	authHeader []string
+	connection      *grpc.ClientConn
+	refClient       *grpcreflect.Client
+	ctx             context.Context
+	reflSource      grpcurl.DescriptorSource
+	authHeader      []string
+	tokenExpiration time.Time
 }
 
 // NewClient creates a new Encryptonize client. Note that in order to call endpoints that require
@@ -192,6 +195,12 @@ func (c *Client) LoginUser(uid, password string) error {
 	}
 
 	c.SetToken(response.Token)
+	tokenExpiration, err := strconv.ParseInt(response.ExpiryTime, 10, 64)
+	if err != nil {
+		return err
+	}
+
+	c.tokenExpiration = time.Unix(tokenExpiration, 0)
 	return nil
 }
 
