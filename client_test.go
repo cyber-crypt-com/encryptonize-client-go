@@ -1,7 +1,6 @@
 package client
 
 import (
-	"fmt"
 	"testing"
 
 	"context"
@@ -42,8 +41,6 @@ func TestMain(m *testing.M) {
 	if ok {
 		endpoint = value
 	}
-
-	fmt.Printf("UID: %v, Pass: %v\n", uid, password)
 
 	os.Exit(m.Run())
 }
