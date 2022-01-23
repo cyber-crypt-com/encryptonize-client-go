@@ -84,6 +84,11 @@ func (c *Client) SetToken(token string) {
 	c.authHeader = []string{"authorization: bearer " + token}
 }
 
+// GetTokenExpiration returns when the current token wil expire.
+func (c *Client) GetTokenExpiration() time.Time {
+	return c.tokenExpiration
+}
+
 // invoke calls `method` with the requested `input` and unmarshals the response into `output`.
 func (c *Client) invoke(method, input string, output interface{}) error {
 	options := grpcurl.FormatOptions{
