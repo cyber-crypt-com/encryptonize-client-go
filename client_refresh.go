@@ -16,9 +16,7 @@ package client
 
 import (
 	"context"
-
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
+	"time"
 )
 
 // ClientWR for making gRPC calls to the Encryptonize service while automatically refreshing the
@@ -49,18 +47,15 @@ func NewClientWR(ctx context.Context, endpoint, certPath, uid, password string) 
 	}, nil
 }
 
-// withRefresh calls `call`. In case the access token appears to be expired, it will try to refresh
-// the token, and then try to call `call` again.
+// withRefresh will refresh the token if it is about to expire, and then call `call`.
 func (c *ClientWR) withRefresh(call func() error) error {
-	err := call()
-	if errStatus, _ := status.FromError(err); errStatus.Code() == codes.Unauthenticated {
-		err := c.Client.LoginUser(c.uid, c.password)
-		if err != nil {
+	// To avoid clock drift issues, refresh the token if it will expire within 1 minute.
+	if time.Now().After(c.tokenExpiration.Add(time.Duration(-1) * time.Minute)) {
+		if err := c.Client.LoginUser(c.uid, c.password); err != nil {
 			return err
 		}
-		return call()
 	}
-	return err
+	return call()
 }
 
 /////////////////////////////////////////////////////////////////////////

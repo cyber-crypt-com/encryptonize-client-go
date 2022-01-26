@@ -107,5 +107,6 @@ type request struct {
 }
 
 type accessToken struct {
-	Token string `json:"accessToken"`
+	Token      string `json:"accessToken"`
+	ExpiryTime string `json:"expiryTime"`
 }
