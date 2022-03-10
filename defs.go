@@ -98,7 +98,6 @@ type request struct {
 	Scopes         []string `json:"scopes,omitempty"`
 	UserID         string   `json:"user_id,omitempty"`
 	GroupID        string   `json:"group_id,omitempty"`
-	Target         string   `json:"target,omitempty"`
 	ObjectID       string   `json:"object_id,omitempty"`
 	Plaintext      []byte   `json:"plaintext,omitempty"`
 	Ciphertext     []byte   `json:"ciphertext,omitempty"`

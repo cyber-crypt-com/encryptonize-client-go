@@ -388,9 +388,9 @@ func (c *Client) GetPermissions(oid string) (*GetPermissionsResponse, error) {
 	return response, nil
 }
 
-// AddPermission grants permission for the `target` to the requested object.
-func (c *Client) AddPermission(oid, target string) error {
-	requestJSON, err := json.Marshal(request{ObjectID: oid, Target: target})
+// AddPermission grants permission for the group to the requested object.
+func (c *Client) AddPermission(oid, gid string) error {
+	requestJSON, err := json.Marshal(request{ObjectID: oid, GroupID: gid})
 	if err != nil {
 		return err
 	}
@@ -398,9 +398,9 @@ func (c *Client) AddPermission(oid, target string) error {
 	return c.invoke("authz.Encryptonize.AddPermission", string(requestJSON), &struct{}{})
 }
 
-// RemovePermission removes permissions for the `target` to the requested object.
-func (c *Client) RemovePermission(oid, target string) error {
-	requestJSON, err := json.Marshal(request{ObjectID: oid, Target: target})
+// RemovePermission removes permissions for the group to the requested object.
+func (c *Client) RemovePermission(oid, gid string) error {
+	requestJSON, err := json.Marshal(request{ObjectID: oid, GroupID: gid})
 	if err != nil {
 		return err
 	}
