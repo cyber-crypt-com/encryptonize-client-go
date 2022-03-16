@@ -237,54 +237,23 @@ func TestRemoveUserFromGroupTwice(t *testing.T) {
 	err = client.LoginUser(uid, pwd)
 	failOnError("Could not log in user", err, t)
 
+	// Create a second user
+	createUserResponse, err := client.CreateUser(protoUserScopes)
+	failOnError("User creation failed", err, t)
+	uid2 := createUserResponse.UserID
+
 	// Create a group, add user to it
 	createGroupResponse, err := client.CreateGroup(protoUserScopes)
 	failOnError("Group creation failed", err, t)
 	gid := createGroupResponse.GroupID
 
-	err = client.AddUserToGroup(uid, gid)
+	err = client.AddUserToGroup(uid2, gid)
 	failOnError("Adding user to group failed", err, t)
 
 	// Try to remove the user from the group twice
-	err = client.RemoveUserFromGroup(uid, gid)
+	err = client.RemoveUserFromGroup(uid2, gid)
 	failOnError("Removing user from group failed", err, t)
 
-	err = client.RemoveUserFromGroup(uid, gid)
+	err = client.RemoveUserFromGroup(uid2, gid)
 	failOnError("Removing user from group failed", err, t)
-}
-
-// Test that we can remove a user from their default group, and still have access to an object they
-// created.
-func TestRemoveUserFromDefaultGroup(t *testing.T) {
-	client, err := coreclient.NewClient(context.Background(), endpoint, certPath)
-	failOnError("Could not create client", err, t)
-	defer client.Close()
-
-	err = client.LoginUser(uid, pwd)
-	failOnError("Could not log in user", err, t)
-
-	// Create a user, a default group is automatically created
-	createUserResponse, err := client.CreateUser(protoUserScopes)
-	failOnError("User creation failed", err, t)
-	uid2 := createUserResponse.UserID
-	pwd2 := createUserResponse.Password
-
-	// Store an object as the new user
-	err = client.LoginUser(uid2, pwd2)
-	failOnError("Could not log in user", err, t)
-
-	plaintext := []byte("foo")
-	associatedData := []byte("bar")
-
-	storeResponse, err := client.Store(plaintext, associatedData)
-	failOnError("Store operation failed", err, t)
-	oid := storeResponse.ObjectID
-
-	// Remove user from their default group. They are now a member of no group
-	err = client.RemoveUserFromGroup(uid2, uid2)
-	failOnError("Removing user from group failed", err, t)
-
-	// They should be able to access the object
-	_, err = client.Retrieve(oid)
-	failOnError("Expected retrieving object to succeed", err, t)
 }
