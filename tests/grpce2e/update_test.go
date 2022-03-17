@@ -23,6 +23,8 @@ import (
 	"bytes"
 	"context"
 
+	"google.golang.org/grpc/codes"
+
 	coreclient "github.com/cyber-crypt-com/encryptonize-core/client"
 )
 
@@ -77,6 +79,7 @@ func TestStoreAndUpdateWrongOid(t *testing.T) {
 	newplaintext := []byte("bar")
 	err = client.Update(oid, newplaintext, associatedData)
 	failOnSuccess("Should not be able to update with a bad oid", err, t)
+	checkStatusCode(err, codes.InvalidArgument, t)
 }
 
 func TestStoreUpdateOtherUserRetrieve(t *testing.T) {

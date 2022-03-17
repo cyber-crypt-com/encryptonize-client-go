@@ -22,6 +22,8 @@ import (
 
 	"context"
 
+	"google.golang.org/grpc/codes"
+
 	coreclient "github.com/cyber-crypt-com/encryptonize-core/client"
 )
 
@@ -113,6 +115,7 @@ func TestGroupScopes(t *testing.T) {
 
 	_, err = client.Retrieve(oid)
 	failOnSuccess("Retrieving object was expected to fail", err, t)
+	checkStatusCode(err, codes.PermissionDenied, t)
 }
 
 // Test creation of a group wth invalid scopes
@@ -140,6 +143,7 @@ func TestAddUserToGroupInvalidGroup(t *testing.T) {
 
 	err = client.AddUserToGroup(uid, invalidUID)
 	failOnSuccess("Expected adding user to group to fail", err, t)
+	checkStatusCode(err, codes.NotFound, t)
 }
 
 // Test adding an invalid user to a group
@@ -158,6 +162,7 @@ func TestAddUserToGroupInvalidUser(t *testing.T) {
 
 	err = client.AddUserToGroup(invalidUID, gid)
 	failOnSuccess("Expected adding user to group to fail", err, t)
+	checkStatusCode(err, codes.NotFound, t)
 }
 
 // Test that we can remove a user from a group, stopping them from accessing an object
@@ -208,6 +213,7 @@ func TestRemoveUserFromGroup(t *testing.T) {
 
 	_, err = client.Retrieve(oid)
 	failOnSuccess("Expected retrieving object failed", err, t)
+	checkStatusCode(err, codes.PermissionDenied, t)
 }
 
 // Test removing an invalid user from a group
@@ -226,6 +232,7 @@ func TestRemoveUserFromGroupInvalidUser(t *testing.T) {
 
 	err = client.RemoveUserFromGroup(invalidUID, gid)
 	failOnSuccess("Expected removing user from group to fail", err, t)
+	checkStatusCode(err, codes.NotFound, t)
 }
 
 // Test that removing a user from a group twice does not fail

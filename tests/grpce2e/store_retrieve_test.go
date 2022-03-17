@@ -27,6 +27,8 @@ import (
 	"fmt"
 	"sync"
 
+	"google.golang.org/grpc/codes"
+
 	coreclient "github.com/cyber-crypt-com/encryptonize-core/client"
 )
 
@@ -106,6 +108,7 @@ func TestRetrieveBadOid(t *testing.T) {
 	oid := "bad"
 	_, err = client.Retrieve(oid)
 	failOnSuccess("Should not be able to retrieve antyhing with a bad oid", err, t)
+	checkStatusCode(err, codes.InvalidArgument, t)
 }
 
 // Test multiple retrieve operations of the same object

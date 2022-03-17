@@ -21,6 +21,9 @@ import (
 	"log"
 	"os"
 
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+
 	coreclient "github.com/cyber-crypt-com/encryptonize-core/client"
 )
 
@@ -104,6 +107,12 @@ func failOnError(message string, err error, t *testing.T) {
 func failOnSuccess(message string, err error, t *testing.T) {
 	if err == nil {
 		t.Fatalf("Test expected to fail: %v", message)
+	}
+}
+
+func checkStatusCode(err error, expectedCode codes.Code, t *testing.T) {
+	if errStatus, _ := status.FromError(err); expectedCode != errStatus.Code() {
+		t.Fatalf("Wrong error returned: expected %v, but got %v", expectedCode, errStatus)
 	}
 }
 

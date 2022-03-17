@@ -22,6 +22,8 @@ import (
 
 	"context"
 
+	"google.golang.org/grpc/codes"
+
 	coreclient "github.com/cyber-crypt-com/encryptonize-core/client"
 )
 
@@ -57,27 +59,35 @@ func TestUnauthorizedAccessToObject(t *testing.T) {
 	// Try to use endpoints that require authorization
 	_, err = client.Retrieve(oidStored)
 	failOnSuccess("Unauthorized user retrieved object", err, t)
+	checkStatusCode(err, codes.PermissionDenied, t)
 
 	err = client.Update(oidStored, plaintext, associatedData)
 	failOnSuccess("Unauthorized user updated object", err, t)
+	checkStatusCode(err, codes.PermissionDenied, t)
 
 	err = client.Delete(oidStored)
 	failOnSuccess("Unauthorized user deleted object", err, t)
+	checkStatusCode(err, codes.PermissionDenied, t)
 
 	err = client.Update(oidStored, plaintext, associatedData)
 	failOnSuccess("Unauthorized user updated object", err, t)
+	checkStatusCode(err, codes.PermissionDenied, t)
 
 	_, err = client.Decrypt(oidEncrypted, encResponse.Ciphertext, encResponse.AssociatedData)
 	failOnSuccess("Unauthorized user decrypted object", err, t)
+	checkStatusCode(err, codes.PermissionDenied, t)
 
 	_, err = client.GetPermissions(oidStored)
 	failOnSuccess("Unauthorized user got permissions", err, t)
+	checkStatusCode(err, codes.PermissionDenied, t)
 
 	err = client.AddPermission(oidStored, uid)
 	failOnSuccess("Unauthorized user added permission", err, t)
+	checkStatusCode(err, codes.PermissionDenied, t)
 
 	err = client.RemovePermission(oidStored, uid)
 	failOnSuccess("Unauthorized user removed permission", err, t)
+	checkStatusCode(err, codes.PermissionDenied, t)
 }
 
 func TestUnauthorizedToRead(t *testing.T) {
@@ -111,12 +121,14 @@ func TestUnauthorizedToRead(t *testing.T) {
 
 	_, err = client.Retrieve(storeResponse.ObjectID)
 	failOnSuccess("User should not be able to retrieve object without READ scope", err, t)
+	checkStatusCode(err, codes.PermissionDenied, t)
 
 	encResponse, err := client.Encrypt(plaintext, associatedData)
 	failOnError("Encrypt operation failed", err, t)
 
 	_, err = client.Decrypt(encResponse.ObjectID, encResponse.Ciphertext, associatedData)
 	failOnSuccess("User should not be able to decrypt object without READ scope", err, t)
+	checkStatusCode(err, codes.PermissionDenied, t)
 }
 
 func TestUnauthorizedToCreate(t *testing.T) {
@@ -147,9 +159,11 @@ func TestUnauthorizedToCreate(t *testing.T) {
 
 	_, err = client.Store(plaintext, associatedData)
 	failOnSuccess("User should not be able to store object without CREATE scope", err, t)
+	checkStatusCode(err, codes.PermissionDenied, t)
 
 	_, err = client.Encrypt(plaintext, associatedData)
 	failOnSuccess("User should not be able to encrypt object without CREATE scope", err, t)
+	checkStatusCode(err, codes.PermissionDenied, t)
 }
 
 func TestUnauthorizedToGetPermissions(t *testing.T) {
@@ -181,6 +195,7 @@ func TestUnauthorizedToGetPermissions(t *testing.T) {
 
 	_, err = client.GetPermissions(oidStored)
 	failOnSuccess("User should not be able to get permission without INDEX scope", err, t)
+	checkStatusCode(err, codes.PermissionDenied, t)
 }
 
 func TestUnauthorizedToManagePermissions(t *testing.T) {
@@ -212,9 +227,11 @@ func TestUnauthorizedToManagePermissions(t *testing.T) {
 
 	err = client.AddPermission(oidStored, uid)
 	failOnSuccess("User should not be able to add permission without OBJECTPERMISSIONS scope", err, t)
+	checkStatusCode(err, codes.PermissionDenied, t)
 
 	err = client.RemovePermission(oidStored, uid)
 	failOnSuccess("User should not be able to remove permission without OBJECTPERMISSIONS scope", err, t)
+	checkStatusCode(err, codes.PermissionDenied, t)
 }
 
 func TestUnauthorizedToManageUsers(t *testing.T) {
@@ -242,6 +259,7 @@ func TestUnauthorizedToManageUsers(t *testing.T) {
 
 	_, err = client.CreateUser(protoUserScopes)
 	failOnSuccess("User should not be able to create user without USERMANAGEMENT scope", err, t)
+	checkStatusCode(err, codes.PermissionDenied, t)
 }
 
 func TestUnauthorizedToUpdateAndDelete(t *testing.T) {
@@ -272,7 +290,9 @@ func TestUnauthorizedToUpdateAndDelete(t *testing.T) {
 
 	err = client.Update(oidStored, []byte("new_foo"), []byte("new_bar"))
 	failOnSuccess("User should not be able to delete object without UPDATE scope", err, t)
+	checkStatusCode(err, codes.PermissionDenied, t)
 
 	err = client.Delete(oidStored)
 	failOnSuccess("User should not be able to delete object without DELETE scope", err, t)
+	checkStatusCode(err, codes.PermissionDenied, t)
 }
