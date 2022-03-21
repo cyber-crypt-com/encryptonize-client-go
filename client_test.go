@@ -122,7 +122,7 @@ func TestStore(t *testing.T) {
 	defer c.Close()
 
 	err = c.LoginUser(uid, password)
-	failOnError("", err, t)
+	failOnError("LoginUser failed", err, t)
 
 	createUserResponse, err := c.CreateUser(scopes)
 	failOnError("CreateUser failed", err, t)
