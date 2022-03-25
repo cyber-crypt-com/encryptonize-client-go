@@ -22,6 +22,8 @@ import (
 
 	"context"
 
+	"google.golang.org/grpc/codes"
+
 	coreclient "github.com/cyber-crypt-com/encryptonize-core/client"
 )
 
@@ -45,6 +47,7 @@ func TestStoreDeleteRetrieve(t *testing.T) {
 
 	_, err = client.Retrieve(oid)
 	failOnSuccess("Object is retrievable after delete", err, t)
+	checkStatusCode(err, codes.NotFound, t)
 }
 
 func TestStoreDeleteTwice(t *testing.T) {
@@ -67,4 +70,5 @@ func TestStoreDeleteTwice(t *testing.T) {
 	// The endpoint should return an error if the object with the OID does not exist
 	err = client.Delete(oid)
 	failOnSuccess("Object is deletable twice", err, t)
+	checkStatusCode(err, codes.NotFound, t)
 }

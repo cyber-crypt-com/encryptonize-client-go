@@ -19,11 +19,14 @@ import (
 
 	"context"
 
+	"google.golang.org/grpc/codes"
+
 	coreclient "github.com/cyber-crypt-com/encryptonize-core/client"
 )
 
 type LoginDetails struct {
 	userid, password string
+	expectedCode     codes.Code
 }
 
 func TestAuthenticated(t *testing.T) {
@@ -53,17 +56,18 @@ func TestWrongCredentials(t *testing.T) {
 	failOnError("Create user request failed", err, t)
 
 	wrongCredentials := []LoginDetails{
-		LoginDetails{userid: "", password: ""},
-		LoginDetails{userid: "", password: pwd},
-		LoginDetails{userid: uid, password: ""},
-		LoginDetails{userid: uid, password: "wrong password"},
-		LoginDetails{userid: newUser.UserID, password: pwd},
-		LoginDetails{userid: newUser.UserID, password: "wrong password"},
+		{userid: "", password: "", expectedCode: codes.InvalidArgument},
+		{userid: "", password: pwd, expectedCode: codes.InvalidArgument},
+		{userid: uid, password: "", expectedCode: codes.Unauthenticated},
+		{userid: uid, password: "wrong password", expectedCode: codes.Unauthenticated},
+		{userid: newUser.UserID, password: pwd, expectedCode: codes.Unauthenticated},
+		{userid: newUser.UserID, password: "wrong password", expectedCode: codes.Unauthenticated},
 	}
 
 	for _, cred := range wrongCredentials {
 		err = client.LoginUser(cred.userid, cred.password)
 		failOnSuccess("Should not be able to log in with wrong credentials", err, t)
+		checkStatusCode(err, cred.expectedCode, t)
 	}
 }
 
@@ -72,23 +76,20 @@ func TestWrongToken(t *testing.T) {
 	failOnError("Could not create client", err, t)
 	defer client.Close()
 
-	badTokens := []string{
-		"bad__bad__token!",
-		"ChAAAAAAAAXXXXAAAAAAAAACEgEE.AAAAAAAAAAAAAAAAAAAAAg.47THgf10Vei2v55TGZP-nXpZ7tSWsAYgaDHjAEc1sUA",
-		"ChAAAAAAAABAAIAAAAAAAAACEgEE.AAAAAAAAAAAAAAAAAAAAAg.47THgf10Vei2v55TGZP-nXpZ7tSWsAYgaDHjAEc1sUA",
-		"ChAAAAAAAABAAIAAAAAAAAACEgEE.AAAAAAAAA+-~/AAAAAAAAg.47THgf10Vei2v55TGZP-nXpZ7tSWsAYgaDHjAEc1sUA",
-		"ChAAAAAAAABAAIAAAAAAAAACEgEE.AAAAAAAAAAAAAAAAAAAAAg.47THgf10Vei2v55TGZP-+-~/7tSWsAYgaDHjAEc1sUA",
-		"extra.ChAAAAAAAABAAIAAAAAAAAACEgEE.AAAAAAAAAAAAAAAAAAAAAg.47THgf10Vei2v55TGZP-+-~/7tSWsAYgaDHjAEc1sUA",
-		"ChAAAAAAAABAAIAAAAAAAAACEgEE.AAAAAAAAAAA.47THgf10Vei2v55TGZP-nXpZ7tSWsAYgaDHjAEc1sUA",
-		"ChAAAAAAAABAAIAAAAAAAAACEgEE.AAAAAAAAAAAAAAAAAAAAAg.47THgf10Vei2v55TGZP-",
-		"BAAIAAAAAAAAACEgEE.AAAAAAAAAAAAAAAAAAAAAg.47THgf10Vei2v55TGZP-nXpZ7tSWsAYgaDHjAEc1sUA",
-		"",
-	}
+	// No token
+	_, err = client.Version()
+	failOnSuccess("Should not be able to get version with a wrong token", err, t)
+	checkStatusCode(err, codes.InvalidArgument, t)
 
-	for _, token := range badTokens {
-		client.SetToken(token)
+	// Wrong format
+	client.SetToken("bad__bad__token!")
+	_, err = client.Version()
+	failOnSuccess("Should not be able to get version with a wrong token", err, t)
+	checkStatusCode(err, codes.Unauthenticated, t)
 
-		_, err = client.Version()
-		failOnSuccess("Should not be able to get version with a wrong token", err, t)
-	}
+	// Wrong contents
+	client.SetToken("QW4gaW52YWxpZCB0b2tlbg")
+	_, err = client.Version()
+	failOnSuccess("Should not be able to get version with a wrong token", err, t)
+	checkStatusCode(err, codes.Unauthenticated, t)
 }

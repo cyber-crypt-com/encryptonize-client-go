@@ -23,6 +23,8 @@ import (
 	"context"
 	"reflect"
 
+	"google.golang.org/grpc/codes"
+
 	coreclient "github.com/cyber-crypt-com/encryptonize-core/client"
 )
 
@@ -46,6 +48,7 @@ func TestDecryptSameUserWithoutPermissions(t *testing.T) {
 	// Try to fetch object without permissions
 	_, err = client.Decrypt(oid, encResponse.Ciphertext, encResponse.AssociatedData)
 	failOnSuccess("User should not be able to decrypt object with no permissions", err, t)
+	checkStatusCode(err, codes.PermissionDenied, t)
 }
 
 // Test that an encrypted object can be retrieved by another user with permissions
@@ -120,6 +123,7 @@ func TestDecryptWithoutPermissions(t *testing.T) {
 
 	_, err = client.Decrypt(oid, encryptResponse.Ciphertext, encryptResponse.AssociatedData)
 	failOnSuccess("Unauthorized user should not be able to decrypt object", err, t)
+	checkStatusCode(err, codes.PermissionDenied, t)
 }
 
 // Test that granting permission to an object is a transitive operation
@@ -203,6 +207,7 @@ func TestGetPermissionsEnc(t *testing.T) {
 
 	_, err = client.GetPermissions(oid)
 	failOnSuccess("Unauthorized user should not be able to access object permissions", err, t)
+	checkStatusCode(err, codes.PermissionDenied, t)
 
 	// Grant permissions to user 2
 	err = client.LoginUser(uid, pwd)
@@ -259,6 +264,7 @@ func TestGetPermissionsEnc(t *testing.T) {
 
 	_, err = client.Decrypt(oid, encryptResponse.Ciphertext, encryptResponse.AssociatedData)
 	failOnSuccess("Unauthorized user should not be able to decrypt object", err, t)
+	checkStatusCode(err, codes.PermissionDenied, t)
 }
 
 // Test that permissions cannot be added to a non-existing user
@@ -279,4 +285,5 @@ func TestAddPermissionNoTargetUserEnc(t *testing.T) {
 	// Try to add permissions for a non-existing user
 	err = client.AddPermission(oid, nonExistingUser)
 	failOnSuccess("Shouldn't able to add user that does not exist!", err, t)
+	checkStatusCode(err, codes.NotFound, t)
 }

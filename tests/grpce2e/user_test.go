@@ -22,6 +22,8 @@ import (
 
 	"context"
 
+	"google.golang.org/grpc/codes"
+
 	coreclient "github.com/cyber-crypt-com/encryptonize-core/client"
 )
 
@@ -73,6 +75,7 @@ func TestRemoveUser(t *testing.T) {
 	// Test user login again
 	err = client.LoginUser(createUserResponse.UserID, createUserResponse.Password)
 	failOnSuccess("Login user request succeeded on a deleted user", err, t)
+	checkStatusCode(err, codes.NotFound, t)
 }
 
 func TestRemoveUserNonExisting(t *testing.T) {
@@ -88,4 +91,5 @@ func TestRemoveUserNonExisting(t *testing.T) {
 	// Test user removal
 	err = client.RemoveUser(nonExistingUser)
 	failOnSuccess("Remove user request succeeded on a non existing user", err, t)
+	checkStatusCode(err, codes.NotFound, t)
 }
