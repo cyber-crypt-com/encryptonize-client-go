@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//go:build blob
-// +build blob
+//go:build objects
+// +build objects
 
 package grpce2e
 
@@ -28,7 +28,7 @@ import (
 )
 
 // Test that unauthorized users cannot perform actions on objects
-func TestBlobUnauthorizedAccessToObject(t *testing.T) {
+func TestObjectsUnauthorizedAccessToObject(t *testing.T) {
 	client, err := coreclient.NewClient(context.Background(), endpoint, certPath)
 	failOnError("Could not create client", err, t)
 	defer client.Close()
@@ -81,7 +81,7 @@ func TestBlobUnauthorizedAccessToObject(t *testing.T) {
 	checkStatusCode(err, codes.PermissionDenied, t)
 }
 
-func TestBlobUnauthorizedToRead(t *testing.T) {
+func TestObjectsUnauthorizedToRead(t *testing.T) {
 	client, err := coreclient.NewClient(context.Background(), endpoint, certPath)
 	failOnError("Could not create client", err, t)
 	defer client.Close()
@@ -115,7 +115,7 @@ func TestBlobUnauthorizedToRead(t *testing.T) {
 	checkStatusCode(err, codes.PermissionDenied, t)
 }
 
-func TestBlobUnauthorizedToCreate(t *testing.T) {
+func TestObjectsUnauthorizedToCreate(t *testing.T) {
 	client, err := coreclient.NewClient(context.Background(), endpoint, certPath)
 	failOnError("Could not create client", err, t)
 	defer client.Close()
@@ -146,7 +146,7 @@ func TestBlobUnauthorizedToCreate(t *testing.T) {
 	checkStatusCode(err, codes.PermissionDenied, t)
 }
 
-func TestBlobUnauthorizedToGetPermissions(t *testing.T) {
+func TestObjectsUnauthorizedToGetPermissions(t *testing.T) {
 	client, err := coreclient.NewClient(context.Background(), endpoint, certPath)
 	failOnError("Could not create client", err, t)
 	defer client.Close()
@@ -178,7 +178,7 @@ func TestBlobUnauthorizedToGetPermissions(t *testing.T) {
 	checkStatusCode(err, codes.PermissionDenied, t)
 }
 
-func TestBlobUnauthorizedToManagePermissions(t *testing.T) {
+func TestObjectsUnauthorizedToManagePermissions(t *testing.T) {
 	client, err := coreclient.NewClient(context.Background(), endpoint, certPath)
 	failOnError("Could not create client", err, t)
 	defer client.Close()
@@ -214,7 +214,7 @@ func TestBlobUnauthorizedToManagePermissions(t *testing.T) {
 	checkStatusCode(err, codes.PermissionDenied, t)
 }
 
-func TestBlobUnauthorizedToManageUsers(t *testing.T) {
+func TestObjectsUnauthorizedToManageUsers(t *testing.T) {
 	client, err := coreclient.NewClient(context.Background(), endpoint, certPath)
 	failOnError("Could not create client", err, t)
 	defer client.Close()
@@ -242,7 +242,7 @@ func TestBlobUnauthorizedToManageUsers(t *testing.T) {
 	checkStatusCode(err, codes.PermissionDenied, t)
 }
 
-func TestBlobUnauthorizedToUpdateAndDelete(t *testing.T) {
+func TestObjectsUnauthorizedToUpdateAndDelete(t *testing.T) {
 	client, err := coreclient.NewClient(context.Background(), endpoint, certPath)
 	failOnError("Could not create client", err, t)
 	defer client.Close()

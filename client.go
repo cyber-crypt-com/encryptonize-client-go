@@ -326,7 +326,7 @@ func (c *Client) Store(plaintext, associatedData []byte) (*StoreResponse, error)
 	}
 
 	response := &StoreResponse{}
-	if err := c.invoke("encryptonize.Blob.Store", string(requestJSON), response); err != nil {
+	if err := c.invoke("encryptonize.Objects.Store", string(requestJSON), response); err != nil {
 		return nil, err
 	}
 
@@ -341,7 +341,7 @@ func (c *Client) Retrieve(oid string) (*RetrieveResponse, error) {
 	}
 
 	response := &RetrieveResponse{}
-	if err := c.invoke("encryptonize.Blob.Retrieve", string(requestJSON), response); err != nil {
+	if err := c.invoke("encryptonize.Objects.Retrieve", string(requestJSON), response); err != nil {
 		return nil, err
 	}
 
@@ -356,7 +356,7 @@ func (c *Client) Update(oid string, plaintext, associatedData []byte) error {
 		return err
 	}
 
-	return c.invoke("encryptonize.Blob.Update", string(requestJSON), &struct{}{})
+	return c.invoke("encryptonize.Objects.Update", string(requestJSON), &struct{}{})
 }
 
 // Delete removes previously stored data from the Encryptonize service.
@@ -366,7 +366,7 @@ func (c *Client) Delete(oid string) error {
 		return err
 	}
 
-	return c.invoke("encryptonize.Blob.Delete", string(requestJSON), &struct{}{})
+	return c.invoke("encryptonize.Objects.Delete", string(requestJSON), &struct{}{})
 }
 
 /////////////////////////////////////////////////////////////////////////

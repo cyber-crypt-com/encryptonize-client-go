@@ -33,9 +33,9 @@ lint: ## Lint the codebase
 tests: build ## Run tests against Encryptonize server
 	go test -v
 
-.PHONY: e2e-tests-blob
-e2e-tests-blob: build  ## Run Encryptonize Blob end-to-end tests
-	go test -count=1 -v -tags=blob ./tests/grpce2e/...
+.PHONY: e2e-tests-objects
+e2e-tests-objects: build  ## Run Encryptonize Objects end-to-end tests
+	go test -count=1 -v -tags=objects ./tests/grpce2e/...
 
 .PHONY: e2e-tests-eaas
 e2e-tests-eaas: build  ## Run Encryptonize EAAS end-to-end tests
