@@ -19,24 +19,15 @@ help:  ## Display this help
 ##### Build targets #####
 .PHONY: build
 build: ## Build the Encryptonize client library
-	go get -v ./...
 	go build -v .
 
 .PHONY: lint
 lint: ## Lint the codebase
 	gofmt -l -w .
 	go mod tidy
-	golangci-lint run -E gosec,asciicheck,bodyclose,gocyclo,unconvert,gocognit,misspell,revive,whitespace --timeout 5m --build-tags "eaas blob"
+	golangci-lint run -E gosec,asciicheck,bodyclose,gocyclo,unconvert,gocognit,misspell,revive,whitespace --timeout 5m
 
 ##### Test targets #####
 .PHONY: tests
 tests: build ## Run tests against Encryptonize server
-	go test -v
-
-.PHONY: e2e-tests-objects
-e2e-tests-objects: build  ## Run Encryptonize Objects end-to-end tests
-	go test -count=1 -v -tags=objects ./tests/grpce2e/...
-
-.PHONY: e2e-tests-eaas
-e2e-tests-eaas: build  ## Run Encryptonize EAAS end-to-end tests
-	go test -count=1 -v -tags=eaas ./tests/grpce2e/...
+	go test -v ./...
