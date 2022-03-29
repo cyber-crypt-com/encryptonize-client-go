@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//go:build storage
-// +build storage
+//go:build blob
+// +build blob
 
 package grpce2e
 

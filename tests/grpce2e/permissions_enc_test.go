@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//go:build encryption
-// +build encryption
+//go:build eaas
+// +build eaas
 
 package grpce2e
 
