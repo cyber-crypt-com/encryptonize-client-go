@@ -165,7 +165,7 @@ func (c *Client) parseScopes(scopes []Scope) ([]string, error) {
 // Version retrieves the version information of the Encryptonize service.
 func (c *Client) Version() (*VersionResponse, error) {
 	response := &VersionResponse{}
-	if err := c.invoke("app.Encryptonize.Version", "", response); err != nil {
+	if err := c.invoke("encryptonize.Version.Version", "", response); err != nil {
 		return nil, err
 	}
 
@@ -195,7 +195,7 @@ func (c *Client) LoginUser(uid, password string) error {
 	}
 
 	response := &accessToken{}
-	if err := c.invoke("authn.Encryptonize.LoginUser", string(requestJSON), response); err != nil {
+	if err := c.invoke("encryptonize.Authn.LoginUser", string(requestJSON), response); err != nil {
 		return err
 	}
 
@@ -221,7 +221,7 @@ func (c *Client) CreateUser(scopes []Scope) (*CreateUserResponse, error) {
 	}
 
 	response := &CreateUserResponse{}
-	if err := c.invoke("authn.Encryptonize.CreateUser", string(requestJSON), response); err != nil {
+	if err := c.invoke("encryptonize.Authn.CreateUser", string(requestJSON), response); err != nil {
 		return nil, err
 	}
 
@@ -235,7 +235,7 @@ func (c *Client) RemoveUser(uid string) error {
 		return err
 	}
 
-	return c.invoke("authn.Encryptonize.RemoveUser", string(requestJSON), &struct{}{})
+	return c.invoke("encryptonize.Authn.RemoveUser", string(requestJSON), &struct{}{})
 }
 
 // CreateGroup creates a new Encryptonize group with the requested scopes.
@@ -250,7 +250,7 @@ func (c *Client) CreateGroup(scopes []Scope) (*CreateGroupResponse, error) {
 	}
 
 	response := &CreateGroupResponse{}
-	if err := c.invoke("authn.Encryptonize.CreateGroup", string(requestJSON), response); err != nil {
+	if err := c.invoke("encryptonize.Authn.CreateGroup", string(requestJSON), response); err != nil {
 		return nil, err
 	}
 
@@ -264,7 +264,7 @@ func (c *Client) AddUserToGroup(uid, gid string) error {
 		return err
 	}
 
-	return c.invoke("authn.Encryptonize.AddUserToGroup", string(requestJSON), &struct{}{})
+	return c.invoke("encryptonize.Authn.AddUserToGroup", string(requestJSON), &struct{}{})
 }
 
 // RemoveUserFromGroup removes a user from a group.
@@ -274,7 +274,7 @@ func (c *Client) RemoveUserFromGroup(uid, gid string) error {
 		return err
 	}
 
-	return c.invoke("authn.Encryptonize.RemoveUserFromGroup", string(requestJSON), &struct{}{})
+	return c.invoke("encryptonize.Authn.RemoveUserFromGroup", string(requestJSON), &struct{}{})
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -290,7 +290,7 @@ func (c *Client) Encrypt(plaintext, associatedData []byte) (*EncryptResponse, er
 	}
 
 	response := &EncryptResponse{}
-	if err := c.invoke("enc.Encryptonize.Encrypt", string(requestJSON), response); err != nil {
+	if err := c.invoke("encryptonize.EAAS.Encrypt", string(requestJSON), response); err != nil {
 		return nil, err
 	}
 
@@ -306,7 +306,7 @@ func (c *Client) Decrypt(objectID string, ciphertext, associatedData []byte) (*D
 	}
 
 	response := &DecryptResponse{}
-	if err := c.invoke("enc.Encryptonize.Decrypt", string(requestJSON), response); err != nil {
+	if err := c.invoke("encryptonize.EAAS.Decrypt", string(requestJSON), response); err != nil {
 		return nil, err
 	}
 
@@ -326,7 +326,7 @@ func (c *Client) Store(plaintext, associatedData []byte) (*StoreResponse, error)
 	}
 
 	response := &StoreResponse{}
-	if err := c.invoke("storage.Encryptonize.Store", string(requestJSON), response); err != nil {
+	if err := c.invoke("encryptonize.Objects.Store", string(requestJSON), response); err != nil {
 		return nil, err
 	}
 
@@ -341,7 +341,7 @@ func (c *Client) Retrieve(oid string) (*RetrieveResponse, error) {
 	}
 
 	response := &RetrieveResponse{}
-	if err := c.invoke("storage.Encryptonize.Retrieve", string(requestJSON), response); err != nil {
+	if err := c.invoke("encryptonize.Objects.Retrieve", string(requestJSON), response); err != nil {
 		return nil, err
 	}
 
@@ -356,7 +356,7 @@ func (c *Client) Update(oid string, plaintext, associatedData []byte) error {
 		return err
 	}
 
-	return c.invoke("storage.Encryptonize.Update", string(requestJSON), &struct{}{})
+	return c.invoke("encryptonize.Objects.Update", string(requestJSON), &struct{}{})
 }
 
 // Delete removes previously stored data from the Encryptonize service.
@@ -366,7 +366,7 @@ func (c *Client) Delete(oid string) error {
 		return err
 	}
 
-	return c.invoke("storage.Encryptonize.Delete", string(requestJSON), &struct{}{})
+	return c.invoke("encryptonize.Objects.Delete", string(requestJSON), &struct{}{})
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -381,7 +381,7 @@ func (c *Client) GetPermissions(oid string) (*GetPermissionsResponse, error) {
 	}
 
 	response := &GetPermissionsResponse{}
-	if err := c.invoke("authz.Encryptonize.GetPermissions", string(requestJSON), response); err != nil {
+	if err := c.invoke("encryptonize.Authz.GetPermissions", string(requestJSON), response); err != nil {
 		return nil, err
 	}
 
@@ -395,7 +395,7 @@ func (c *Client) AddPermission(oid, gid string) error {
 		return err
 	}
 
-	return c.invoke("authz.Encryptonize.AddPermission", string(requestJSON), &struct{}{})
+	return c.invoke("encryptonize.Authz.AddPermission", string(requestJSON), &struct{}{})
 }
 
 // RemovePermission removes permissions for the group to the requested object.
@@ -405,5 +405,5 @@ func (c *Client) RemovePermission(oid, gid string) error {
 		return err
 	}
 
-	return c.invoke("authz.Encryptonize.RemovePermission", string(requestJSON), &struct{}{})
+	return c.invoke("encryptonize.Authz.RemovePermission", string(requestJSON), &struct{}{})
 }

@@ -19,18 +19,15 @@ help:  ## Display this help
 ##### Build targets #####
 .PHONY: build
 build: ## Build the Encryptonize client library
-	go get -v ./...
 	go build -v .
 
 .PHONY: lint
 lint: ## Lint the codebase
-	./scripts/lint.sh
+	gofmt -l -w .
+	go mod tidy
+	golangci-lint run -E gosec,asciicheck,bodyclose,gocyclo,unconvert,gocognit,misspell,revive,whitespace --timeout 5m
 
 ##### Test targets #####
 .PHONY: tests
 tests: build ## Run tests against Encryptonize server
-	go test -v
-
-.PHONY: e2e-tests
-e2e-tests: build  ## Run end-to-end tests
-	./scripts/e2e_tests.sh
+	go test -v ./...
