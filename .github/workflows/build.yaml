@@ -1,0 +1,24 @@
+name: Integrations build and test
+
+on: push
+
+jobs:
+  ##### Client #####
+  client-build:
+    runs-on: ubuntu-20.04
+    defaults:
+      run:
+        working-directory: client
+
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v2
+
+    - name: Setup and cache dependencies
+      uses: cyber-crypt-com/build-setup-action@master
+
+    - name: Lint
+      run: make lint
+
+    - name: Build
+      run: make build

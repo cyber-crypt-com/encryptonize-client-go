@@ -30,4 +30,41 @@ lint: ## Lint the codebase
 ##### Test targets #####
 .PHONY: tests
 tests: build ## Run tests against Encryptonize server
-	go test -v ./...
+	@make docker-core-test
+	@make docker-objects-test
+
+.PHONY: docker-core-test
+docker-core-test: docker-core-test-up ## Run EAAS tests
+	USER_INFO=$$(docker exec encryptonize-eaas /eaas create-user rcudiom  | tail -n 1) && \
+		export E2E_TEST_UID=$$(echo $$USER_INFO | jq -r ".user_id") && \
+		export E2E_TEST_PASS=$$(echo $$USER_INFO | jq -r ".password") && \
+		go test -v ./... -run ^TestCore && \
+		go test -v ./... -run ^TestEncrypt
+	@make docker-core-test-down
+
+.PHONY: docker-core-test-up
+docker-core-test-up: ## Start docker EAAS test environment
+	cd test && \
+		docker-compose --profile eaas up -d
+
+.PHONY: docker-core-test-down
+docker-core-test-down: ## Stop docker EAAS test environment
+	docker-compose --profile eaas -f test/compose.yaml down
+
+.PHONY: docker-objects-test
+docker-objects-test: docker-objects-test-up ## Run objects tests
+	USER_INFO=$$(docker exec encryptonize-objects /encryptonize-objects create-user rcudiom  | tail -n 1) && \
+		export E2E_TEST_UID=$$(echo $$USER_INFO | jq -r ".user_id") && \
+		export E2E_TEST_PASS=$$(echo $$USER_INFO | jq -r ".password") && \
+		go test -v ./... -run ^TestCore && \
+		go test -v ./... -run ^TestObjects
+	@make docker-objects-test-down
+
+.PHONY: docker-objects-test-up
+docker-objects-test-up: ## Start docker Objects test environment
+	cd test && \
+		docker-compose --profile objects up -d
+
+.PHONY: docker-objects-test-down
+docker-objects-test-down: ## Stop docker Objects test environment
+	docker-compose --profile objects -f test/compose.yaml down
