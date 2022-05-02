@@ -21,7 +21,7 @@ import (
 	"context"
 )
 
-func TestUtilityWR(t *testing.T) {
+func TestCoreUtilityWR(t *testing.T) {
 	c, err := NewClientWR(context.Background(), endpoint, certPath, uid, password)
 	failOnError("NewClientWR failed", err, t)
 	defer c.Close()
@@ -32,7 +32,7 @@ func TestUtilityWR(t *testing.T) {
 	failOnError("Version failed", err, t)
 }
 
-func TestUserManagementWR(t *testing.T) {
+func TestCoreUserManagementWR(t *testing.T) {
 	c, err := NewClientWR(context.Background(), endpoint, certPath, uid, password)
 	failOnError("NewClientWR failed", err, t)
 	defer c.Close()
@@ -78,7 +78,7 @@ func TestEncryptWR(t *testing.T) {
 	}
 }
 
-func TestStoreWR(t *testing.T) {
+func TestObjectsStoreWR(t *testing.T) {
 	c, err := NewClientWR(context.Background(), endpoint, certPath, uid, password)
 	failOnError("NewClientWR failed", err, t)
 	defer c.Close()
@@ -111,7 +111,7 @@ func TestStoreWR(t *testing.T) {
 	failOnError("Delete failed", err, t)
 }
 
-func TestPermissionsWR(t *testing.T) {
+func TestObjectsPermissionsWR(t *testing.T) {
 	c, err := NewClientWR(context.Background(), endpoint, certPath, uid, password)
 	failOnError("NewClientWR failed", err, t)
 	defer c.Close()
@@ -136,7 +136,7 @@ func TestPermissionsWR(t *testing.T) {
 	failOnError("RemovePermission failed", err, t)
 }
 
-func TestTokenRefreshWR(t *testing.T) {
+func TestCoreTokenRefreshWR(t *testing.T) {
 	c, err := NewClientWR(context.Background(), endpoint, certPath, uid, password)
 	failOnError("NewClientWR failed", err, t)
 	defer c.Close()
@@ -151,8 +151,6 @@ func TestTokenRefreshWR(t *testing.T) {
 	c.tokenExpiration = time.Now().Add(time.Duration(-1) * time.Hour)
 	c.authHeader = nil
 
-	plaintext := []byte("foo")
-	associatedData := []byte("bar")
-	_, err = c.Store(plaintext, associatedData)
-	failOnError("Store failed", err, t)
+	_, err = c.CreateUser(scopes)
+	failOnError("CreateUser failed", err, t)
 }
