@@ -35,7 +35,6 @@ jobs:
       id: gitversion
       uses: gittools/actions/gitversion/execute@v0.9.13
       with:
-        targetPath: encryptonize-client-dotnet
         additionalArguments: '/overrideconfig mode=Mainline'
 
     - name: Create tag
