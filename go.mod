@@ -1,4 +1,4 @@
-module github.com/cyber-crypt-com/encryptonize-core/client
+module github.com/cyber-crypt-com/encryptonize-client-go
 
 go 1.17
 
