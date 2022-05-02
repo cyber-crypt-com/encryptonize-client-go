@@ -35,11 +35,11 @@ tests: build ## Run tests against Encryptonize server
 
 .PHONY: docker-core-test
 docker-core-test: docker-core-test-up ## Run EAAS tests
-	USER_INFO=$$(docker exec encryptonize-eaas /eaas create-user rcudiom  | tail -n 1) && \
+	USER_INFO=$$(docker exec encryptonize-core /encryptonize-core create-user rcudiom  | tail -n 1) && \
 		export E2E_TEST_UID=$$(echo $$USER_INFO | jq -r ".user_id") && \
 		export E2E_TEST_PASS=$$(echo $$USER_INFO | jq -r ".password") && \
-		go test -v ./... -run ^TestCore && \
-		go test -v ./... -run ^TestEncrypt
+		go test -v ./... -count=1 -run ^TestCore && \
+		go test -v ./... -count=1 -run ^TestEncrypt
 	@make docker-core-test-down
 
 .PHONY: docker-core-test-up
@@ -56,8 +56,8 @@ docker-objects-test: docker-objects-test-up ## Run objects tests
 	USER_INFO=$$(docker exec encryptonize-objects /encryptonize-objects create-user rcudiom  | tail -n 1) && \
 		export E2E_TEST_UID=$$(echo $$USER_INFO | jq -r ".user_id") && \
 		export E2E_TEST_PASS=$$(echo $$USER_INFO | jq -r ".password") && \
-		go test -v ./... -run ^TestCore && \
-		go test -v ./... -run ^TestObjects
+		go test -v ./... -count=1 -run ^TestCore && \
+		go test -v ./... -count=1 -run ^TestObjects
 	@make docker-objects-test-down
 
 .PHONY: docker-objects-test-up
