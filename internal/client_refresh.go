@@ -12,11 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package client
+package internal
 
 import (
 	"context"
 	"time"
+
+	"github.com/cyber-crypt-com/encryptonize-client-go/pkg"
 )
 
 // ClientWR for making gRPC calls to the Encryptonize service while automatically refreshing the
@@ -63,8 +65,8 @@ func (c *ClientWR) withRefresh(call func() error) error {
 /////////////////////////////////////////////////////////////////////////
 
 // Version retrieves the version information of the Encryptonize service.
-func (c *ClientWR) Version() (*VersionResponse, error) {
-	var response *VersionResponse
+func (c *ClientWR) Version() (*pkg.VersionResponse, error) {
+	var response *pkg.VersionResponse
 	err := c.withRefresh(func() error {
 		var err error
 		response, err = c.Client.Version()
@@ -77,8 +79,8 @@ func (c *ClientWR) Version() (*VersionResponse, error) {
 }
 
 // Health retrieves the current health status of the Encryptonize service.
-func (c *ClientWR) Health() (*HealthResponse, error) {
-	var response *HealthResponse
+func (c *ClientWR) Health() (*pkg.HealthResponse, error) {
+	var response *pkg.HealthResponse
 	err := c.withRefresh(func() error {
 		var err error
 		response, err = c.Client.Health()
@@ -107,8 +109,8 @@ func (c *ClientWR) LoginUser(uid, password string) error {
 }
 
 // CreateUser creates a new Encryptonize user with the requested scopes.
-func (c *ClientWR) CreateUser(scopes []Scope) (*CreateUserResponse, error) {
-	var response *CreateUserResponse
+func (c *ClientWR) CreateUser(scopes []pkg.Scope) (*pkg.CreateUserResponse, error) {
+	var response *pkg.CreateUserResponse
 	err := c.withRefresh(func() error {
 		var err error
 		response, err = c.Client.CreateUser(scopes)
@@ -128,8 +130,8 @@ func (c *ClientWR) RemoveUser(uid string) error {
 }
 
 // CreateGroup creates a new Encryptonize group with the requested scopes.
-func (c *ClientWR) CreateGroup(scopes []Scope) (*CreateGroupResponse, error) {
-	var response *CreateGroupResponse
+func (c *ClientWR) CreateGroup(scopes []pkg.Scope) (*pkg.CreateGroupResponse, error) {
+	var response *pkg.CreateGroupResponse
 	err := c.withRefresh(func() error {
 		var err error
 		response, err = c.Client.CreateGroup(scopes)
@@ -161,8 +163,8 @@ func (c *ClientWR) RemoveUserFromGroup(uid, gid string) error {
 
 // Encrypt encrypts the `plaintext` and tags both `plaintext` and `associatedData` returning the
 // resulting ciphertext.
-func (c *ClientWR) Encrypt(plaintext, associatedData []byte) (*EncryptResponse, error) {
-	var response *EncryptResponse
+func (c *ClientWR) Encrypt(plaintext, associatedData []byte) (*pkg.EncryptResponse, error) {
+	var response *pkg.EncryptResponse
 	err := c.withRefresh(func() error {
 		var err error
 		response, err = c.Client.Encrypt(plaintext, associatedData)
@@ -176,8 +178,8 @@ func (c *ClientWR) Encrypt(plaintext, associatedData []byte) (*EncryptResponse, 
 
 // Decrypt decrypts a previously encrypted `ciphertext` and verifies the integrity of the `ciphertext`
 // and `associatedData`.
-func (c *ClientWR) Decrypt(objectID string, ciphertext, associatedData []byte) (*DecryptResponse, error) {
-	var response *DecryptResponse
+func (c *ClientWR) Decrypt(objectID string, ciphertext, associatedData []byte) (*pkg.DecryptResponse, error) {
+	var response *pkg.DecryptResponse
 	err := c.withRefresh(func() error {
 		var err error
 		response, err = c.Client.Decrypt(objectID, ciphertext, associatedData)
@@ -195,8 +197,8 @@ func (c *ClientWR) Decrypt(objectID string, ciphertext, associatedData []byte) (
 
 // Store encrypts the `plaintext` and tags both `plaintext` and `associatedData` storing the
 // resulting ciphertext in the Encryptonize service.
-func (c *ClientWR) Store(plaintext, associatedData []byte) (*StoreResponse, error) {
-	var response *StoreResponse
+func (c *ClientWR) Store(plaintext, associatedData []byte) (*pkg.StoreResponse, error) {
+	var response *pkg.StoreResponse
 	err := c.withRefresh(func() error {
 		var err error
 		response, err = c.Client.Store(plaintext, associatedData)
@@ -209,8 +211,8 @@ func (c *ClientWR) Store(plaintext, associatedData []byte) (*StoreResponse, erro
 }
 
 // Retrieve decrypts a previously stored object returning the ciphertext.
-func (c *ClientWR) Retrieve(oid string) (*RetrieveResponse, error) {
-	var response *RetrieveResponse
+func (c *ClientWR) Retrieve(oid string) (*pkg.RetrieveResponse, error) {
+	var response *pkg.RetrieveResponse
 	err := c.withRefresh(func() error {
 		var err error
 		response, err = c.Client.Retrieve(oid)
@@ -242,8 +244,8 @@ func (c *ClientWR) Delete(oid string) error {
 /////////////////////////////////////////////////////////////////////////
 
 // GetPermissions returns a list of IDs that have access to the requested object.
-func (c *ClientWR) GetPermissions(oid string) (*GetPermissionsResponse, error) {
-	var response *GetPermissionsResponse
+func (c *ClientWR) GetPermissions(oid string) (*pkg.GetPermissionsResponse, error) {
+	var response *pkg.GetPermissionsResponse
 	err := c.withRefresh(func() error {
 		var err error
 		response, err = c.Client.GetPermissions(oid)

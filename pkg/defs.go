@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package client
+package pkg
 
 /////////////////////////////////////////////////////////////////////////
 //                               Utility                               //
@@ -86,26 +86,4 @@ type RetrieveResponse struct {
 
 type GetPermissionsResponse struct {
 	GroupIDs []string `json:"groupIds"`
-}
-
-/////////////////////////////////////////////////////////////////////////
-//                               Internal                              //
-/////////////////////////////////////////////////////////////////////////
-
-// request is a catch-all for request structs. By using `omitempty` we can marshal to the correct
-// JSON structure by only setting the necessary fields.
-type request struct {
-	Scopes         []string `json:"scopes,omitempty"`
-	UserID         string   `json:"user_id,omitempty"`
-	GroupID        string   `json:"group_id,omitempty"`
-	ObjectID       string   `json:"object_id,omitempty"`
-	Plaintext      []byte   `json:"plaintext,omitempty"`
-	Ciphertext     []byte   `json:"ciphertext,omitempty"`
-	AssociatedData []byte   `json:"associated_data,omitempty"`
-	Password       string   `json:"password,omitempty"`
-}
-
-type accessToken struct {
-	Token      string `json:"accessToken"`
-	ExpiryTime string `json:"expiryTime"`
 }

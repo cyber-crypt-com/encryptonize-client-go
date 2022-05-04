@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package client
+package internal
 
 import (
 	"testing"
@@ -20,6 +20,8 @@ import (
 	"context"
 	"log"
 	"os"
+
+	"github.com/cyber-crypt-com/encryptonize-client-go/pkg"
 )
 
 var uid string
@@ -27,14 +29,14 @@ var password string
 var certPath = ""
 var endpoint = "localhost:9000"
 
-var scopes = []Scope{
-	ScopeRead,
-	ScopeCreate,
-	ScopeUpdate,
-	ScopeDelete,
-	ScopeIndex,
-	ScopeObjectPermissions,
-	ScopeUserManagement,
+var scopes = []pkg.Scope{
+	pkg.ScopeRead,
+	pkg.ScopeCreate,
+	pkg.ScopeUpdate,
+	pkg.ScopeDelete,
+	pkg.ScopeIndex,
+	pkg.ScopeObjectPermissions,
+	pkg.ScopeUserManagement,
 }
 
 func failOnError(message string, err error, t *testing.T) {
