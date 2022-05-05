@@ -1,0 +1,43 @@
+version: "3.8"
+
+x-service-variables: &service-variables
+  KEYSERVER_INSECURE: "1"
+
+  # Key Provider KWP Init Key
+  KEYSERVER_KEYPROVIDER_STANDALONE_KWPINITKEY: "0000000000000000000000000000000000000000000000000000000000000000"
+
+  # Storage
+  KEYSERVER_STORAGE_USERNAME: &ks_db_user "keyserver"
+  KEYSERVER_STORAGE_PASSWORD: &ks_db_pass "keyserver"
+  KEYSERVER_STORAGE_HOST: "keyserver-db"
+  KEYSERVER_STORAGE_PORT: "5432"
+  KEYSERVER_STORAGE_DATABASE: &ks_db_name "keyserver"
+  KEYSERVER_STORAGE_SSLMODE: "disable"
+  KEYSERVER_STORAGE_SCHEMA: "./data/ks_storage.sql"
+
+services:
+  key-server:
+    image: ghcr.io/cyber-crypt-com/encryptonize-key-server:v0.1.14
+    container_name: key-server
+    environment:
+      <<: *service-variables
+    ports:
+      - 50051:50051
+    depends_on:
+      keyserver-db:
+        condition: service_healthy
+
+  keyserver-db:
+    image: postgres:alpine3.15
+    container_name: keyserver-db
+    environment:
+      POSTGRES_USER: *ks_db_user
+      POSTGRES_PASSWORD: *ks_db_pass
+      POSTGRES_DB: *ks_db_name
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}
+      timeout: 30s
+      interval: 5s
+      retries: 5
