@@ -44,12 +44,12 @@ docker-core-test: docker-core-test-up ## Run EAAS tests
 
 .PHONY: docker-core-test-up
 docker-core-test-up: ## Start docker EAAS test environment
-	cd test && \
+	cd test/encryptonize && \
 		docker-compose --profile eaas up -d
 
 .PHONY: docker-core-test-down
 docker-core-test-down: ## Stop docker EAAS test environment
-	docker-compose --profile eaas -f test/compose.yaml down
+	docker-compose --profile eaas -f test/encryptonize/compose.yaml down -v
 
 .PHONY: docker-objects-test
 docker-objects-test: docker-objects-test-up ## Run objects tests
@@ -62,9 +62,9 @@ docker-objects-test: docker-objects-test-up ## Run objects tests
 
 .PHONY: docker-objects-test-up
 docker-objects-test-up: ## Start docker Objects test environment
-	cd test && \
+	cd test/encryptonize && \
 		docker-compose --profile objects up -d
 
 .PHONY: docker-objects-test-down
 docker-objects-test-down: ## Stop docker Objects test environment
-	docker-compose --profile objects -f test/compose.yaml down
+	docker-compose --profile objects -f test/encryptonize/compose.yaml down -v
