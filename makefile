@@ -39,8 +39,8 @@ docker-core-test: docker-core-test-up ## Run EAAS tests
 	USER_INFO=$$(docker exec encryptonize-core /encryptonize-core create-user rcudiom  | tail -n 1) && \
 		export E2E_TEST_UID=$$(echo $$USER_INFO | jq -r ".user_id") && \
 		export E2E_TEST_PASS=$$(echo $$USER_INFO | jq -r ".password") && \
-		go test -v ./internal/encryptonize -count=1 -run ^TestCore && \
-		go test -v ./internal/encryptonize -count=1 -run ^TestEncrypt
+		go test -v ./encryptonize -count=1 -run ^TestCore && \
+		go test -v ./encryptonize -count=1 -run ^TestEncrypt
 	@make docker-core-test-down
 
 .PHONY: docker-core-test-up
@@ -57,8 +57,8 @@ docker-objects-test: docker-objects-test-up ## Run objects tests
 	USER_INFO=$$(docker exec encryptonize-objects /encryptonize-objects create-user rcudiom  | tail -n 1) && \
 		export E2E_TEST_UID=$$(echo $$USER_INFO | jq -r ".user_id") && \
 		export E2E_TEST_PASS=$$(echo $$USER_INFO | jq -r ".password") && \
-		go test -v ./internal/encryptonize -count=1 -run ^TestCore && \
-		go test -v ./internal/encryptonize -count=1 -run ^TestObjects
+		go test -v ./encryptonize -count=1 -run ^TestCore && \
+		go test -v ./encryptonize -count=1 -run ^TestObjects
 	@make docker-objects-test-down
 
 .PHONY: docker-objects-test-up
@@ -76,7 +76,7 @@ docker-keyserver-test: docker-keyserver-test-up ## Run Key Server tests
 		KS_ID=$$(echo $$KS_RESPONSE | jq -r ".KsID") && \
 		KIK_RESPONSE=$$(docker exec key-server /encryptonize-key-server newKik --ksid=$$KS_ID 2> /dev/null) && \
 		export E2E_TEST_KIK_ID=$$(echo $$KIK_RESPONSE | jq -r ".KikID") && \
-		go test -v ./pkg/keyserver/client -count=1
+		go test -v ./keyserver -count=1
 	@make docker-keyserver-test-down
 
 .PHONY: docker-keyserver-test-up
