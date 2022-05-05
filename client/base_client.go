@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package internal
+package client
 
 import (
 	"bytes"
@@ -23,8 +23,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cyber-crypt-com/encryptonize-client-go/pkg"
-
 	"github.com/fullstorydev/grpcurl"
 	"github.com/jhump/protoreflect/grpcreflect"
 	"google.golang.org/grpc"
@@ -33,8 +31,8 @@ import (
 	grpc_reflection "google.golang.org/grpc/reflection/grpc_reflection_v1alpha"
 )
 
-// Client for making gRPC calls to the Encryptonize service.
-type Client struct {
+// baseClient for making gRPC calls to the Encryptonize service.
+type baseClient struct {
 	connection      *grpc.ClientConn
 	refClient       *grpcreflect.Client
 	ctx             context.Context
@@ -45,7 +43,7 @@ type Client struct {
 
 // NewClient creates a new Encryptonize client. Note that in order to call endpoints that require
 // authentication, you need to call `LoginUser` first.
-func NewClient(ctx context.Context, endpoint, certPath string) (*Client, error) {
+func newBaseClient(ctx context.Context, endpoint, certPath string) (*baseClient, error) {
 	var dialOption grpc.DialOption
 
 	if certPath != "" {
@@ -68,7 +66,7 @@ func NewClient(ctx context.Context, endpoint, certPath string) (*Client, error) 
 	client := grpcreflect.NewClient(ctx, grpc_reflection.NewServerReflectionClient(connection))
 	reflSource := grpcurl.DescriptorSourceFromServer(ctx, client)
 
-	return &Client{
+	return &baseClient{
 		connection: connection,
 		refClient:  client,
 		ctx:        ctx,
@@ -77,22 +75,22 @@ func NewClient(ctx context.Context, endpoint, certPath string) (*Client, error) 
 }
 
 // Close closes all connections to the Encryptonize server.
-func (c *Client) Close() error {
+func (c *baseClient) Close() error {
 	return c.connection.Close()
 }
 
 // SetToken sets the provided token as the authentication header.
-func (c *Client) SetToken(token string) {
+func (c *baseClient) SetToken(token string) {
 	c.authHeader = []string{"authorization: bearer " + token}
 }
 
 // GetTokenExpiration returns when the current token wil expire.
-func (c *Client) GetTokenExpiration() time.Time {
+func (c *baseClient) GetTokenExpiration() time.Time {
 	return c.tokenExpiration
 }
 
 // invoke calls `method` with the requested `input` and unmarshals the response into `output`.
-func (c *Client) invoke(method, input string, output interface{}) error {
+func (c *baseClient) invoke(method, input string, output interface{}) error {
 	options := grpcurl.FormatOptions{
 		EmitJSONDefaultFields: false,
 		IncludeTextSeparator:  true,
@@ -133,24 +131,24 @@ func (c *Client) invoke(method, input string, output interface{}) error {
 }
 
 // parseScopes converts an array of `Scope`s to an array of strings.
-func (c *Client) parseScopes(scopes []pkg.Scope) ([]string, error) {
+func (c *baseClient) parseScopes(scopes []Scope) ([]string, error) {
 	scopeStrings := make([]string, 0, len(scopes))
 
 	for _, scope := range scopes {
 		switch scope {
-		case pkg.ScopeRead:
+		case ScopeRead:
 			scopeStrings = append(scopeStrings, "READ")
-		case pkg.ScopeCreate:
+		case ScopeCreate:
 			scopeStrings = append(scopeStrings, "CREATE")
-		case pkg.ScopeUpdate:
+		case ScopeUpdate:
 			scopeStrings = append(scopeStrings, "UPDATE")
-		case pkg.ScopeDelete:
+		case ScopeDelete:
 			scopeStrings = append(scopeStrings, "DELETE")
-		case pkg.ScopeIndex:
+		case ScopeIndex:
 			scopeStrings = append(scopeStrings, "INDEX")
-		case pkg.ScopeObjectPermissions:
+		case ScopeObjectPermissions:
 			scopeStrings = append(scopeStrings, "OBJECTPERMISSIONS")
-		case pkg.ScopeUserManagement:
+		case ScopeUserManagement:
 			scopeStrings = append(scopeStrings, "USERMANAGEMENT")
 		default:
 			return nil, errors.New("invalid scope")
@@ -165,8 +163,8 @@ func (c *Client) parseScopes(scopes []pkg.Scope) ([]string, error) {
 /////////////////////////////////////////////////////////////////////////
 
 // Version retrieves the version information of the Encryptonize service.
-func (c *Client) Version() (*pkg.VersionResponse, error) {
-	response := &pkg.VersionResponse{}
+func (c *baseClient) Version() (*VersionResponse, error) {
+	response := &VersionResponse{}
 	if err := c.invoke("encryptonize.Version.Version", "", response); err != nil {
 		return nil, err
 	}
@@ -175,8 +173,8 @@ func (c *Client) Version() (*pkg.VersionResponse, error) {
 }
 
 // Health retrieves the current health status of the Encryptonize service.
-func (c *Client) Health() (*pkg.HealthResponse, error) {
-	response := &pkg.HealthResponse{}
+func (c *baseClient) Health() (*HealthResponse, error) {
+	response := &HealthResponse{}
 	if err := c.invoke("grpc.health.v1.Health.Check", "", response); err != nil {
 		return nil, err
 	}
@@ -190,7 +188,7 @@ func (c *Client) Health() (*pkg.HealthResponse, error) {
 
 // LoginUser authenticates to the Encryptonize service with the given credentials and sets the
 // resulting access token for future calls. Call `LoginUser` again to switch to a different user.
-func (c *Client) LoginUser(uid, password string) error {
+func (c *baseClient) LoginUser(uid, password string) error {
 	requestJSON, err := json.Marshal(request{UserID: uid, Password: password})
 	if err != nil {
 		return err
@@ -212,7 +210,7 @@ func (c *Client) LoginUser(uid, password string) error {
 }
 
 // CreateUser creates a new Encryptonize user with the requested scopes.
-func (c *Client) CreateUser(scopes []pkg.Scope) (*pkg.CreateUserResponse, error) {
+func (c *baseClient) CreateUser(scopes []Scope) (*CreateUserResponse, error) {
 	parsedScopes, err := c.parseScopes(scopes)
 	if err != nil {
 		return nil, err
@@ -222,7 +220,7 @@ func (c *Client) CreateUser(scopes []pkg.Scope) (*pkg.CreateUserResponse, error)
 		return nil, err
 	}
 
-	response := &pkg.CreateUserResponse{}
+	response := &CreateUserResponse{}
 	if err := c.invoke("encryptonize.Authn.CreateUser", string(requestJSON), response); err != nil {
 		return nil, err
 	}
@@ -231,7 +229,7 @@ func (c *Client) CreateUser(scopes []pkg.Scope) (*pkg.CreateUserResponse, error)
 }
 
 // RemoveUser removes a user from the Encryptonize service.
-func (c *Client) RemoveUser(uid string) error {
+func (c *baseClient) RemoveUser(uid string) error {
 	requestJSON, err := json.Marshal(request{UserID: uid})
 	if err != nil {
 		return err
@@ -241,7 +239,7 @@ func (c *Client) RemoveUser(uid string) error {
 }
 
 // CreateGroup creates a new Encryptonize group with the requested scopes.
-func (c *Client) CreateGroup(scopes []pkg.Scope) (*pkg.CreateGroupResponse, error) {
+func (c *baseClient) CreateGroup(scopes []Scope) (*CreateGroupResponse, error) {
 	parsedScopes, err := c.parseScopes(scopes)
 	if err != nil {
 		return nil, err
@@ -251,7 +249,7 @@ func (c *Client) CreateGroup(scopes []pkg.Scope) (*pkg.CreateGroupResponse, erro
 		return nil, err
 	}
 
-	response := &pkg.CreateGroupResponse{}
+	response := &CreateGroupResponse{}
 	if err := c.invoke("encryptonize.Authn.CreateGroup", string(requestJSON), response); err != nil {
 		return nil, err
 	}
@@ -260,7 +258,7 @@ func (c *Client) CreateGroup(scopes []pkg.Scope) (*pkg.CreateGroupResponse, erro
 }
 
 // AddUserToGroup adds a user to a group.
-func (c *Client) AddUserToGroup(uid, gid string) error {
+func (c *baseClient) AddUserToGroup(uid, gid string) error {
 	requestJSON, err := json.Marshal(request{UserID: uid, GroupID: gid})
 	if err != nil {
 		return err
@@ -270,7 +268,7 @@ func (c *Client) AddUserToGroup(uid, gid string) error {
 }
 
 // RemoveUserFromGroup removes a user from a group.
-func (c *Client) RemoveUserFromGroup(uid, gid string) error {
+func (c *baseClient) RemoveUserFromGroup(uid, gid string) error {
 	requestJSON, err := json.Marshal(request{UserID: uid, GroupID: gid})
 	if err != nil {
 		return err
@@ -285,13 +283,13 @@ func (c *Client) RemoveUserFromGroup(uid, gid string) error {
 
 // Encrypt encrypts the `plaintext` and tags both `plaintext` and `associatedData` returning the
 // resulting ciphertext.
-func (c *Client) Encrypt(plaintext, associatedData []byte) (*pkg.EncryptResponse, error) {
+func (c *baseClient) Encrypt(plaintext, associatedData []byte) (*EncryptResponse, error) {
 	requestJSON, err := json.Marshal(request{Plaintext: plaintext, AssociatedData: associatedData})
 	if err != nil {
 		return nil, err
 	}
 
-	response := &pkg.EncryptResponse{}
+	response := &EncryptResponse{}
 	if err := c.invoke("encryptonize.EAAS.Encrypt", string(requestJSON), response); err != nil {
 		return nil, err
 	}
@@ -301,13 +299,13 @@ func (c *Client) Encrypt(plaintext, associatedData []byte) (*pkg.EncryptResponse
 
 // Decrypt decrypts a previously encrypted `ciphertext` and verifies the integrity of the `ciphertext`
 // and `associatedData`.
-func (c *Client) Decrypt(objectID string, ciphertext, associatedData []byte) (*pkg.DecryptResponse, error) {
+func (c *baseClient) Decrypt(objectID string, ciphertext, associatedData []byte) (*DecryptResponse, error) {
 	requestJSON, err := json.Marshal(request{ObjectID: objectID, Ciphertext: ciphertext, AssociatedData: associatedData})
 	if err != nil {
 		return nil, err
 	}
 
-	response := &pkg.DecryptResponse{}
+	response := &DecryptResponse{}
 	if err := c.invoke("encryptonize.EAAS.Decrypt", string(requestJSON), response); err != nil {
 		return nil, err
 	}
@@ -321,13 +319,13 @@ func (c *Client) Decrypt(objectID string, ciphertext, associatedData []byte) (*p
 
 // Store encrypts the `plaintext` and tags both `plaintext` and `associatedData` storing the
 // resulting ciphertext in the Encryptonize service.
-func (c *Client) Store(plaintext, associatedData []byte) (*pkg.StoreResponse, error) {
+func (c *baseClient) Store(plaintext, associatedData []byte) (*StoreResponse, error) {
 	requestJSON, err := json.Marshal(request{Plaintext: plaintext, AssociatedData: associatedData})
 	if err != nil {
 		return nil, err
 	}
 
-	response := &pkg.StoreResponse{}
+	response := &StoreResponse{}
 	if err := c.invoke("encryptonize.Objects.Store", string(requestJSON), response); err != nil {
 		return nil, err
 	}
@@ -336,13 +334,13 @@ func (c *Client) Store(plaintext, associatedData []byte) (*pkg.StoreResponse, er
 }
 
 // Retrieve decrypts a previously stored object returning the ciphertext.
-func (c *Client) Retrieve(oid string) (*pkg.RetrieveResponse, error) {
+func (c *baseClient) Retrieve(oid string) (*RetrieveResponse, error) {
 	requestJSON, err := json.Marshal(request{ObjectID: oid})
 	if err != nil {
 		return nil, err
 	}
 
-	response := &pkg.RetrieveResponse{}
+	response := &RetrieveResponse{}
 	if err := c.invoke("encryptonize.Objects.Retrieve", string(requestJSON), response); err != nil {
 		return nil, err
 	}
@@ -352,7 +350,7 @@ func (c *Client) Retrieve(oid string) (*pkg.RetrieveResponse, error) {
 
 // Update replaces the currently stored data of an object with the specified `plaintext` and
 // `associatedData`.
-func (c *Client) Update(oid string, plaintext, associatedData []byte) error {
+func (c *baseClient) Update(oid string, plaintext, associatedData []byte) error {
 	requestJSON, err := json.Marshal(request{ObjectID: oid, Plaintext: plaintext, AssociatedData: associatedData})
 	if err != nil {
 		return err
@@ -362,7 +360,7 @@ func (c *Client) Update(oid string, plaintext, associatedData []byte) error {
 }
 
 // Delete removes previously stored data from the Encryptonize service.
-func (c *Client) Delete(oid string) error {
+func (c *baseClient) Delete(oid string) error {
 	requestJSON, err := json.Marshal(request{ObjectID: oid})
 	if err != nil {
 		return err
@@ -376,13 +374,13 @@ func (c *Client) Delete(oid string) error {
 /////////////////////////////////////////////////////////////////////////
 
 // GetPermissions returns a list of IDs that have access to the requested object.
-func (c *Client) GetPermissions(oid string) (*pkg.GetPermissionsResponse, error) {
+func (c *baseClient) GetPermissions(oid string) (*GetPermissionsResponse, error) {
 	requestJSON, err := json.Marshal(request{ObjectID: oid})
 	if err != nil {
 		return nil, err
 	}
 
-	response := &pkg.GetPermissionsResponse{}
+	response := &GetPermissionsResponse{}
 	if err := c.invoke("encryptonize.Authz.GetPermissions", string(requestJSON), response); err != nil {
 		return nil, err
 	}
@@ -391,7 +389,7 @@ func (c *Client) GetPermissions(oid string) (*pkg.GetPermissionsResponse, error)
 }
 
 // AddPermission grants permission for the group to the requested object.
-func (c *Client) AddPermission(oid, gid string) error {
+func (c *baseClient) AddPermission(oid, gid string) error {
 	requestJSON, err := json.Marshal(request{ObjectID: oid, GroupID: gid})
 	if err != nil {
 		return err
@@ -401,7 +399,7 @@ func (c *Client) AddPermission(oid, gid string) error {
 }
 
 // RemovePermission removes permissions for the group to the requested object.
-func (c *Client) RemovePermission(oid, gid string) error {
+func (c *baseClient) RemovePermission(oid, gid string) error {
 	requestJSON, err := json.Marshal(request{ObjectID: oid, GroupID: gid})
 	if err != nil {
 		return err

@@ -3,9 +3,6 @@ package client
 import (
 	"context"
 	"time"
-
-	"github.com/cyber-crypt-com/encryptonize-client-go/internal"
-	"github.com/cyber-crypt-com/encryptonize-client-go/pkg"
 )
 
 type BaseClient interface {
@@ -16,22 +13,22 @@ type BaseClient interface {
 	// GetTokenExpiration returns when the current token wil expire.
 	GetTokenExpiration() time.Time
 	// Version retrieves the version information of the Encryptonize service.
-	Version() (*pkg.VersionResponse, error)
+	Version() (*VersionResponse, error)
 	// Health retrieves the current health status of the Encryptonize service.
-	Health() (*pkg.HealthResponse, error)
+	Health() (*HealthResponse, error)
 	// LoginUser authenticates to the Encryptonize service with the given credentials and sets the
 	// resulting access token for future calls. Call `LoginUser` again to switch to a different user.
 	LoginUser(uid, password string) error
 	// CreateUser creates a new Encryptonize user with the requested scopes.
-	CreateUser(scopes []pkg.Scope) (*pkg.CreateUserResponse, error)
+	CreateUser(scopes []Scope) (*CreateUserResponse, error)
 	// RemoveUser removes a user from the Encryptonize service.
 	RemoveUser(uid string) error
 	// CreateGroup creates a new Encryptonize group with the requested scopes.
-	CreateGroup(scopes []pkg.Scope) (*pkg.CreateGroupResponse, error)
+	CreateGroup(scopes []Scope) (*CreateGroupResponse, error)
 	// AddUserToGroup adds a user to a group.
 	AddUserToGroup(uid, gid string) error
 	// GetPermissions returns a list of IDs that have access to the requested object.
-	GetPermissions(oid string) (*pkg.GetPermissionsResponse, error)
+	GetPermissions(oid string) (*GetPermissionsResponse, error)
 	// AddPermission grants permission for the group to the requested object.
 	AddPermission(oid, gid string) error
 	// RemovePermission removes permissions for the group to the requested object.
@@ -42,19 +39,19 @@ type CoreClient interface {
 	BaseClient
 	// Encrypt encrypts the `plaintext` and tags both `plaintext` and `associatedData` returning the
 	// resulting ciphertext.
-	Encrypt(plaintext, associatedData []byte) (*pkg.EncryptResponse, error)
+	Encrypt(plaintext, associatedData []byte) (*EncryptResponse, error)
 	// Decrypt decrypts a previously encrypted `ciphertext` and verifies the integrity of the `ciphertext`
 	// and `associatedData`.
-	Decrypt(objectID string, ciphertext, associatedData []byte) (*pkg.DecryptResponse, error)
+	Decrypt(objectID string, ciphertext, associatedData []byte) (*DecryptResponse, error)
 }
 
 type ObjectsClient interface {
 	BaseClient
 	// Store encrypts the `plaintext` and tags both `plaintext` and `associatedData` storing the
 	// resulting ciphertext in the Encryptonize service.
-	Store(plaintext, associatedData []byte) (*pkg.StoreResponse, error)
+	Store(plaintext, associatedData []byte) (*StoreResponse, error)
 	// Retrieve decrypts a previously stored object returning the ciphertext.
-	Retrieve(oid string) (*pkg.RetrieveResponse, error)
+	Retrieve(oid string) (*RetrieveResponse, error)
 	// Update replaces the currently stored data of an object with the specified `plaintext` and
 	// `associatedData`.
 	Update(oid string, plaintext, associatedData []byte) error
@@ -65,7 +62,7 @@ type ObjectsClient interface {
 // NewCoreClient creates a new Encryptonize Core client. Note that in order to call endpoints that require
 // authentication, you need to call `LoginUser` first.
 func NewCoreClient(ctx context.Context, endpoint, certPath string) (CoreClient, error) {
-	client, err := internal.NewClient(ctx, endpoint, certPath)
+	client, err := newBaseClient(ctx, endpoint, certPath)
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +73,7 @@ func NewCoreClient(ctx context.Context, endpoint, certPath string) (CoreClient, 
 // NewObjectsClient creates a new Encryptonize Core client. Note that in order to call endpoints that require
 // authentication, you need to call `LoginUser` first.
 func NewObjectsClient(ctx context.Context, endpoint, certPath string) (ObjectsClient, error) {
-	client, err := internal.NewClient(ctx, endpoint, certPath)
+	client, err := newBaseClient(ctx, endpoint, certPath)
 	if err != nil {
 		return nil, err
 	}
@@ -87,7 +84,7 @@ func NewObjectsClient(ctx context.Context, endpoint, certPath string) (ObjectsCl
 // NewCoreClientWR creates a new Encryptonize Core client. In order to switch credentials to another user,
 // use `LoginUser`.
 func NewCoreClientWR(ctx context.Context, endpoint, certPath, uid, password string) (CoreClient, error) {
-	client, err := internal.NewClient(ctx, endpoint, certPath)
+	client, err := newBaseClientWR(ctx, endpoint, certPath, uid, password)
 	if err != nil {
 		return nil, err
 	}
@@ -98,7 +95,7 @@ func NewCoreClientWR(ctx context.Context, endpoint, certPath, uid, password stri
 // NewObjectsClientWR creates a new Encryptonize Objects client. In order to switch credentials to another user,
 // use `LoginUser`.
 func NewObjectsClientWR(ctx context.Context, endpoint, certPath, uid, password string) (ObjectsClient, error) {
-	client, err := internal.NewClientWR(ctx, endpoint, certPath, uid, password)
+	client, err := newBaseClientWR(ctx, endpoint, certPath, uid, password)
 	if err != nil {
 		return nil, err
 	}

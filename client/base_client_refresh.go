@@ -12,27 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package internal
+package client
 
 import (
 	"context"
 	"time"
-
-	"github.com/cyber-crypt-com/encryptonize-client-go/pkg"
 )
 
-// ClientWR for making gRPC calls to the Encryptonize service while automatically refreshing the
+// baseClientWR for making gRPC calls to the Encryptonize service while automatically refreshing the
 // access token.
-type ClientWR struct { //nolint:revive
-	Client
+type baseClientWR struct { //nolint:revive
+	baseClient
 	uid      string
 	password string
 }
 
 // NewClientWR creates a new Encryptonize client. In order to switch credentials to another user,
 // use `LoginUser`.
-func NewClientWR(ctx context.Context, endpoint, certPath, uid, password string) (*ClientWR, error) {
-	client, err := NewClient(ctx, endpoint, certPath)
+func newBaseClientWR(ctx context.Context, endpoint, certPath, uid, password string) (*baseClientWR, error) {
+	client, err := newBaseClient(ctx, endpoint, certPath)
 	if err != nil {
 		return nil, err
 	}
@@ -42,18 +40,18 @@ func NewClientWR(ctx context.Context, endpoint, certPath, uid, password string) 
 		return nil, err
 	}
 
-	return &ClientWR{
-		Client:   *client,
-		uid:      uid,
-		password: password,
+	return &baseClientWR{
+		baseClient: *client,
+		uid:        uid,
+		password:   password,
 	}, nil
 }
 
 // withRefresh will refresh the token if it is about to expire, and then call `call`.
-func (c *ClientWR) withRefresh(call func() error) error {
+func (c *baseClientWR) withRefresh(call func() error) error {
 	// To avoid clock drift issues, refresh the token if it will expire within 1 minute.
 	if time.Now().After(c.tokenExpiration.Add(time.Duration(-1) * time.Minute)) {
-		if err := c.Client.LoginUser(c.uid, c.password); err != nil {
+		if err := c.baseClient.LoginUser(c.uid, c.password); err != nil {
 			return err
 		}
 	}
@@ -65,11 +63,11 @@ func (c *ClientWR) withRefresh(call func() error) error {
 /////////////////////////////////////////////////////////////////////////
 
 // Version retrieves the version information of the Encryptonize service.
-func (c *ClientWR) Version() (*pkg.VersionResponse, error) {
-	var response *pkg.VersionResponse
+func (c *baseClientWR) Version() (*VersionResponse, error) {
+	var response *VersionResponse
 	err := c.withRefresh(func() error {
 		var err error
-		response, err = c.Client.Version()
+		response, err = c.baseClient.Version()
 		return err
 	})
 	if err != nil {
@@ -79,11 +77,11 @@ func (c *ClientWR) Version() (*pkg.VersionResponse, error) {
 }
 
 // Health retrieves the current health status of the Encryptonize service.
-func (c *ClientWR) Health() (*pkg.HealthResponse, error) {
-	var response *pkg.HealthResponse
+func (c *baseClientWR) Health() (*HealthResponse, error) {
+	var response *HealthResponse
 	err := c.withRefresh(func() error {
 		var err error
-		response, err = c.Client.Health()
+		response, err = c.baseClient.Health()
 		return err
 	})
 	if err != nil {
@@ -98,8 +96,8 @@ func (c *ClientWR) Health() (*pkg.HealthResponse, error) {
 
 // LoginUser authenticates to the Encryptonize service with the given credentials and sets the
 // resulting access token for future calls. Call `LoginUser` again to switch to a different user.
-func (c *ClientWR) LoginUser(uid, password string) error {
-	err := c.Client.LoginUser(uid, password)
+func (c *baseClientWR) LoginUser(uid, password string) error {
+	err := c.baseClient.LoginUser(uid, password)
 	if err != nil {
 		return err
 	}
@@ -109,11 +107,11 @@ func (c *ClientWR) LoginUser(uid, password string) error {
 }
 
 // CreateUser creates a new Encryptonize user with the requested scopes.
-func (c *ClientWR) CreateUser(scopes []pkg.Scope) (*pkg.CreateUserResponse, error) {
-	var response *pkg.CreateUserResponse
+func (c *baseClientWR) CreateUser(scopes []Scope) (*CreateUserResponse, error) {
+	var response *CreateUserResponse
 	err := c.withRefresh(func() error {
 		var err error
-		response, err = c.Client.CreateUser(scopes)
+		response, err = c.baseClient.CreateUser(scopes)
 		return err
 	})
 	if err != nil {
@@ -123,18 +121,18 @@ func (c *ClientWR) CreateUser(scopes []pkg.Scope) (*pkg.CreateUserResponse, erro
 }
 
 // RemoveUser removes a user from the Encryptonize service.
-func (c *ClientWR) RemoveUser(uid string) error {
+func (c *baseClientWR) RemoveUser(uid string) error {
 	return c.withRefresh(func() error {
-		return c.Client.RemoveUser(uid)
+		return c.baseClient.RemoveUser(uid)
 	})
 }
 
 // CreateGroup creates a new Encryptonize group with the requested scopes.
-func (c *ClientWR) CreateGroup(scopes []pkg.Scope) (*pkg.CreateGroupResponse, error) {
-	var response *pkg.CreateGroupResponse
+func (c *baseClientWR) CreateGroup(scopes []Scope) (*CreateGroupResponse, error) {
+	var response *CreateGroupResponse
 	err := c.withRefresh(func() error {
 		var err error
-		response, err = c.Client.CreateGroup(scopes)
+		response, err = c.baseClient.CreateGroup(scopes)
 		return err
 	})
 	if err != nil {
@@ -144,16 +142,16 @@ func (c *ClientWR) CreateGroup(scopes []pkg.Scope) (*pkg.CreateGroupResponse, er
 }
 
 // AddUserToGroup adds a user to a group.
-func (c *ClientWR) AddUserToGroup(uid, gid string) error {
+func (c *baseClientWR) AddUserToGroup(uid, gid string) error {
 	return c.withRefresh(func() error {
-		return c.Client.AddUserToGroup(uid, gid)
+		return c.baseClient.AddUserToGroup(uid, gid)
 	})
 }
 
 // RemoveUserFromGroup removes a user from a group.
-func (c *ClientWR) RemoveUserFromGroup(uid, gid string) error {
+func (c *baseClientWR) RemoveUserFromGroup(uid, gid string) error {
 	return c.withRefresh(func() error {
-		return c.Client.RemoveUserFromGroup(uid, gid)
+		return c.baseClient.RemoveUserFromGroup(uid, gid)
 	})
 }
 
@@ -163,11 +161,11 @@ func (c *ClientWR) RemoveUserFromGroup(uid, gid string) error {
 
 // Encrypt encrypts the `plaintext` and tags both `plaintext` and `associatedData` returning the
 // resulting ciphertext.
-func (c *ClientWR) Encrypt(plaintext, associatedData []byte) (*pkg.EncryptResponse, error) {
-	var response *pkg.EncryptResponse
+func (c *baseClientWR) Encrypt(plaintext, associatedData []byte) (*EncryptResponse, error) {
+	var response *EncryptResponse
 	err := c.withRefresh(func() error {
 		var err error
-		response, err = c.Client.Encrypt(plaintext, associatedData)
+		response, err = c.baseClient.Encrypt(plaintext, associatedData)
 		return err
 	})
 	if err != nil {
@@ -178,11 +176,11 @@ func (c *ClientWR) Encrypt(plaintext, associatedData []byte) (*pkg.EncryptRespon
 
 // Decrypt decrypts a previously encrypted `ciphertext` and verifies the integrity of the `ciphertext`
 // and `associatedData`.
-func (c *ClientWR) Decrypt(objectID string, ciphertext, associatedData []byte) (*pkg.DecryptResponse, error) {
-	var response *pkg.DecryptResponse
+func (c *baseClientWR) Decrypt(objectID string, ciphertext, associatedData []byte) (*DecryptResponse, error) {
+	var response *DecryptResponse
 	err := c.withRefresh(func() error {
 		var err error
-		response, err = c.Client.Decrypt(objectID, ciphertext, associatedData)
+		response, err = c.baseClient.Decrypt(objectID, ciphertext, associatedData)
 		return err
 	})
 	if err != nil {
@@ -197,11 +195,11 @@ func (c *ClientWR) Decrypt(objectID string, ciphertext, associatedData []byte) (
 
 // Store encrypts the `plaintext` and tags both `plaintext` and `associatedData` storing the
 // resulting ciphertext in the Encryptonize service.
-func (c *ClientWR) Store(plaintext, associatedData []byte) (*pkg.StoreResponse, error) {
-	var response *pkg.StoreResponse
+func (c *baseClientWR) Store(plaintext, associatedData []byte) (*StoreResponse, error) {
+	var response *StoreResponse
 	err := c.withRefresh(func() error {
 		var err error
-		response, err = c.Client.Store(plaintext, associatedData)
+		response, err = c.baseClient.Store(plaintext, associatedData)
 		return err
 	})
 	if err != nil {
@@ -211,11 +209,11 @@ func (c *ClientWR) Store(plaintext, associatedData []byte) (*pkg.StoreResponse, 
 }
 
 // Retrieve decrypts a previously stored object returning the ciphertext.
-func (c *ClientWR) Retrieve(oid string) (*pkg.RetrieveResponse, error) {
-	var response *pkg.RetrieveResponse
+func (c *baseClientWR) Retrieve(oid string) (*RetrieveResponse, error) {
+	var response *RetrieveResponse
 	err := c.withRefresh(func() error {
 		var err error
-		response, err = c.Client.Retrieve(oid)
+		response, err = c.baseClient.Retrieve(oid)
 		return err
 	})
 	if err != nil {
@@ -226,16 +224,16 @@ func (c *ClientWR) Retrieve(oid string) (*pkg.RetrieveResponse, error) {
 
 // Update replaces the currently stored data of an object with the specified `plaintext` and
 // `associatedData`.
-func (c *ClientWR) Update(oid string, plaintext, associatedData []byte) error {
+func (c *baseClientWR) Update(oid string, plaintext, associatedData []byte) error {
 	return c.withRefresh(func() error {
-		return c.Client.Update(oid, plaintext, associatedData)
+		return c.baseClient.Update(oid, plaintext, associatedData)
 	})
 }
 
 // Delete removes previously stored data from the Encryptonize service.
-func (c *ClientWR) Delete(oid string) error {
+func (c *baseClientWR) Delete(oid string) error {
 	return c.withRefresh(func() error {
-		return c.Client.Delete(oid)
+		return c.baseClient.Delete(oid)
 	})
 }
 
@@ -244,11 +242,11 @@ func (c *ClientWR) Delete(oid string) error {
 /////////////////////////////////////////////////////////////////////////
 
 // GetPermissions returns a list of IDs that have access to the requested object.
-func (c *ClientWR) GetPermissions(oid string) (*pkg.GetPermissionsResponse, error) {
-	var response *pkg.GetPermissionsResponse
+func (c *baseClientWR) GetPermissions(oid string) (*GetPermissionsResponse, error) {
+	var response *GetPermissionsResponse
 	err := c.withRefresh(func() error {
 		var err error
-		response, err = c.Client.GetPermissions(oid)
+		response, err = c.baseClient.GetPermissions(oid)
 		return err
 	})
 	if err != nil {
@@ -258,15 +256,15 @@ func (c *ClientWR) GetPermissions(oid string) (*pkg.GetPermissionsResponse, erro
 }
 
 // AddPermission grants permission for the `target` to the requested object.
-func (c *ClientWR) AddPermission(oid, target string) error {
+func (c *baseClientWR) AddPermission(oid, target string) error {
 	return c.withRefresh(func() error {
-		return c.Client.AddPermission(oid, target)
+		return c.baseClient.AddPermission(oid, target)
 	})
 }
 
 // RemovePermission removes permissions for the `target` to the requested object.
-func (c *ClientWR) RemovePermission(oid, target string) error {
+func (c *baseClientWR) RemovePermission(oid, target string) error {
 	return c.withRefresh(func() error {
-		return c.Client.RemovePermission(oid, target)
+		return c.baseClient.RemovePermission(oid, target)
 	})
 }
