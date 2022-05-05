@@ -84,7 +84,7 @@ func NewCoreClient(ctx context.Context, endpoint, certPath string) (CoreClient, 
 	return client, nil
 }
 
-// NewObjectsClient creates a new Encryptonize Core client. Note that in order to call endpoints that require
+// NewObjectsClient creates a new Encryptonize Objects client. Note that in order to call endpoints that require
 // authentication, you need to call `LoginUser` first.
 func NewObjectsClient(ctx context.Context, endpoint, certPath string) (ObjectsClient, error) {
 	client, err := newBaseClient(ctx, endpoint, certPath)
