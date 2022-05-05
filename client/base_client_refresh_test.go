@@ -16,75 +16,26 @@ package client
 
 import (
 	"testing"
+	"time"
 
 	"context"
-	"log"
-	"os"
 )
 
-var uid string
-var password string
-var certPath = ""
-var endpoint = "localhost:9000"
-
-var scopes = []Scope{
-	ScopeRead,
-	ScopeCreate,
-	ScopeUpdate,
-	ScopeDelete,
-	ScopeIndex,
-	ScopeObjectPermissions,
-	ScopeUserManagement,
-}
-
-func failOnError(message string, err error, t *testing.T) {
-	if err != nil {
-		t.Fatalf("%s: %v", message, err)
-	}
-}
-
-func TestMain(m *testing.M) {
-	var ok bool
-	uid, ok = os.LookupEnv("E2E_TEST_UID")
-	if !ok {
-		log.Fatal("E2E_TEST_UID must be set")
-	}
-	password, ok = os.LookupEnv("E2E_TEST_PASS")
-	if !ok {
-		log.Fatal("E2E_TEST_PASS must be set")
-	}
-	value, ok := os.LookupEnv("E2E_TEST_CERT")
-	if ok {
-		certPath = value
-	}
-	value, ok = os.LookupEnv("E2E_TEST_URL")
-	if ok {
-		endpoint = value
-	}
-
-	os.Exit(m.Run())
-}
-
-func TestCoreUtility(t *testing.T) {
-	c, err := NewClient(context.Background(), endpoint, certPath)
-	failOnError("NewClient failed", err, t)
+func TestCoreUtilityWR(t *testing.T) {
+	c, err := newBaseClientWR(context.Background(), endpoint, certPath, uid, password)
+	failOnError("newBaseClientWR failed", err, t)
 	defer c.Close()
 
-	err = c.LoginUser(uid, password)
-	failOnError("LoginUser failed", err, t)
 	_, err = c.Health()
-	failOnError("Health check failed", err, t)
+	failOnError("Health failed", err, t)
 	_, err = c.Version()
-	failOnError("Version request failed", err, t)
+	failOnError("Version failed", err, t)
 }
 
-func TestCoreUserManagement(t *testing.T) {
-	c, err := NewClient(context.Background(), endpoint, certPath)
-	failOnError("NewClient failed", err, t)
+func TestCoreUserManagementWR(t *testing.T) {
+	c, err := newBaseClientWR(context.Background(), endpoint, certPath, uid, password)
+	failOnError("newBaseClientWR failed", err, t)
 	defer c.Close()
-
-	err = c.LoginUser(uid, password)
-	failOnError("LoginUser failed", err, t)
 
 	createUserResponse, err := c.CreateUser(scopes)
 	failOnError("CreateUser failed", err, t)
@@ -102,13 +53,10 @@ func TestCoreUserManagement(t *testing.T) {
 	failOnError("RemoveUser failed", err, t)
 }
 
-func TestEncrypt(t *testing.T) {
-	c, err := NewClient(context.Background(), endpoint, certPath)
-	failOnError("NewClient failed", err, t)
+func TestEncryptWR(t *testing.T) {
+	c, err := newBaseClientWR(context.Background(), endpoint, certPath, uid, password)
+	failOnError("newBaseClientWR failed", err, t)
 	defer c.Close()
-
-	err = c.LoginUser(uid, password)
-	failOnError("LoginUser failed", err, t)
 
 	createUserResponse, err := c.CreateUser(scopes)
 	failOnError("CreateUser failed", err, t)
@@ -130,13 +78,10 @@ func TestEncrypt(t *testing.T) {
 	}
 }
 
-func TestObjectsStore(t *testing.T) {
-	c, err := NewClient(context.Background(), endpoint, certPath)
-	failOnError("NewClient failed", err, t)
+func TestObjectsStoreWR(t *testing.T) {
+	c, err := newBaseClientWR(context.Background(), endpoint, certPath, uid, password)
+	failOnError("newBaseClientWR failed", err, t)
 	defer c.Close()
-
-	err = c.LoginUser(uid, password)
-	failOnError("LoginUser failed", err, t)
 
 	createUserResponse, err := c.CreateUser(scopes)
 	failOnError("CreateUser failed", err, t)
@@ -166,13 +111,10 @@ func TestObjectsStore(t *testing.T) {
 	failOnError("Delete failed", err, t)
 }
 
-func TestObjectsPermissions(t *testing.T) {
-	c, err := NewClient(context.Background(), endpoint, certPath)
-	failOnError("NewClient failed", err, t)
+func TestObjectsPermissionsWR(t *testing.T) {
+	c, err := newBaseClientWR(context.Background(), endpoint, certPath, uid, password)
+	failOnError("newBaseClientWR failed", err, t)
 	defer c.Close()
-
-	err = c.LoginUser(uid, password)
-	failOnError("LoginUser failed", err, t)
 
 	createUserResponse, err := c.CreateUser(scopes)
 	failOnError("CreateUser failed", err, t)
@@ -192,4 +134,23 @@ func TestObjectsPermissions(t *testing.T) {
 
 	err = c.RemovePermission(storeResponse.ObjectID, createUserResponse.UserID)
 	failOnError("RemovePermission failed", err, t)
+}
+
+func TestCoreTokenRefreshWR(t *testing.T) {
+	c, err := newBaseClientWR(context.Background(), endpoint, certPath, uid, password)
+	failOnError("newBaseClientWR failed", err, t)
+	defer c.Close()
+
+	createUserResponse, err := c.CreateUser(scopes)
+	failOnError("CreateUser failed", err, t)
+	err = c.LoginUser(createUserResponse.UserID, createUserResponse.Password)
+	failOnError("LoginUser failed", err, t)
+
+	// Make sure logic refreshing token is triggered and clear token
+	// to see error if token is not refreshed
+	c.tokenExpiration = time.Now().Add(time.Duration(-1) * time.Hour)
+	c.authHeader = nil
+
+	_, err = c.CreateUser(scopes)
+	failOnError("CreateUser failed", err, t)
 }
