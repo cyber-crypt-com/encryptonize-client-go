@@ -290,7 +290,7 @@ func (c *baseClient) Encrypt(plaintext, associatedData []byte) (*EncryptResponse
 	}
 
 	response := &EncryptResponse{}
-	if err := c.invoke("encryptonize.EAAS.Encrypt", string(requestJSON), response); err != nil {
+	if err := c.invoke("encryptonize.Core.Encrypt", string(requestJSON), response); err != nil {
 		return nil, err
 	}
 
@@ -306,7 +306,7 @@ func (c *baseClient) Decrypt(objectID string, ciphertext, associatedData []byte)
 	}
 
 	response := &DecryptResponse{}
-	if err := c.invoke("encryptonize.EAAS.Decrypt", string(requestJSON), response); err != nil {
+	if err := c.invoke("encryptonize.Core.Decrypt", string(requestJSON), response); err != nil {
 		return nil, err
 	}
 

@@ -35,7 +35,7 @@ tests: build ## Run tests against Encryptonize server
 	@make docker-keyserver-test
 
 .PHONY: docker-core-test
-docker-core-test: docker-core-test-up ## Run EAAS tests
+docker-core-test: docker-core-test-up ## Run Core tests
 	USER_INFO=$$(docker exec encryptonize-core /encryptonize-core create-user rcudiom  | tail -n 1) && \
 		export E2E_TEST_UID=$$(echo $$USER_INFO | jq -r ".user_id") && \
 		export E2E_TEST_PASS=$$(echo $$USER_INFO | jq -r ".password") && \
@@ -44,13 +44,13 @@ docker-core-test: docker-core-test-up ## Run EAAS tests
 	@make docker-core-test-down
 
 .PHONY: docker-core-test-up
-docker-core-test-up: ## Start docker EAAS test environment
+docker-core-test-up: ## Start docker Core test environment
 	cd test/encryptonize && \
-		docker-compose --profile eaas up -d
+		docker-compose --profile core up -d
 
 .PHONY: docker-core-test-down
-docker-core-test-down: ## Stop docker EAAS test environment
-	docker-compose --profile eaas -f test/encryptonize/compose.yaml down -v
+docker-core-test-down: ## Stop docker Core test environment
+	docker-compose --profile core -f test/encryptonize/compose.yaml down -v
 
 .PHONY: docker-objects-test
 docker-objects-test: docker-objects-test-up ## Run objects tests
