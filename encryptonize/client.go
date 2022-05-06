@@ -41,6 +41,8 @@ type BaseClient interface {
 	CreateGroup(scopes []Scope) (*CreateGroupResponse, error)
 	// AddUserToGroup adds a user to a group.
 	AddUserToGroup(uid, gid string) error
+	// RemoveUserFromGroup removes a user from a group.
+	RemoveUserFromGroup(uid, gid string) error
 	// GetPermissions returns a list of IDs that have access to the requested object.
 	GetPermissions(oid string) (*GetPermissionsResponse, error)
 	// AddPermission grants permission for the group to the requested object.
