@@ -1,5 +1,6 @@
 // Copyright 2020-2022 CYBERCRYPT
 
+// encryptonize-client-go/keyserver is a client library for the Encryptonize Key Server.
 package keyserver
 
 import (
@@ -17,19 +18,19 @@ import (
 	grpc_reflection "google.golang.org/grpc/reflection/grpc_reflection_v1alpha"
 )
 
-// GetKeySetRequest defines a grpc proto request.
+// GetKeySetRequest is the request made during a GetKeySet call.
 type GetKeySetRequest struct {
 	KikID string `json:"kikId"`
 	Nonce []byte `json:"nonce"`
 }
 
-// GetKeySetResponse defines a grpc proto response.
+// GetKeySetResponse is the response to a GetKeySet call.
 type GetKeySetResponse struct {
 	Nonce       []byte `json:"nonce"`
 	WrappedKeys []byte `json:"wrappedKeys"`
 }
 
-// Client for making gRPC calls to the Encryptonize service.
+// Client is the Key Server client.
 type Client struct {
 	connection *grpc.ClientConn
 	refClient  *grpcreflect.Client
@@ -37,7 +38,7 @@ type Client struct {
 	reflSource grpcurl.DescriptorSource
 }
 
-// NewClient creates a new KeyServer client.
+// NewClient creates a new Key Server client.
 func NewClient(ctx context.Context, endpoint, certPath string) (*Client, error) {
 	var dialOption grpc.DialOption
 
@@ -110,6 +111,7 @@ func (c *Client) invoke(method, input string, output interface{}) error {
 	return json.Unmarshal(response.Bytes(), output)
 }
 
+// GetKeySet requests a key set from the Key Server.
 func (c *Client) GetKeySet(kikID string, nonce []byte) (*GetKeySetResponse, error) {
 	requestJSON, err := json.Marshal(GetKeySetRequest{KikID: kikID, Nonce: nonce})
 	if err != nil {
