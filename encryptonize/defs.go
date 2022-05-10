@@ -18,12 +18,19 @@ package encryptonize
 //                               Utility                               //
 /////////////////////////////////////////////////////////////////////////
 
+// VersionResponse is the response to a Version call.
 type VersionResponse struct {
+	// Git commit of the current version
 	Commit string `json:"commit"`
-	Tag    string `json:"tag"`
+
+	// Version tag of the current version
+	Tag string `json:"tag"`
 }
 
+// HealthResponse is the response to a Health call.
 type HealthResponse struct {
+	// Current health status of the server. See
+	// github.com/grpc/grpc/blob/master/doc/health-checking.md for details.
 	Status string `json:"status"`
 }
 
@@ -34,21 +41,27 @@ type HealthResponse struct {
 type Scope int
 
 const (
-	ScopeRead Scope = iota
-	ScopeCreate
-	ScopeUpdate
-	ScopeDelete
-	ScopeIndex
-	ScopeObjectPermissions
-	ScopeUserManagement
+	ScopeRead              Scope = iota // Scope to decrypt objects
+	ScopeCreate                         // Scope encrypt/store objects
+	ScopeUpdate                         // Scope to update existing objects
+	ScopeDelete                         // Scope to delete stored objects
+	ScopeIndex                          // Scope to list object permissions
+	ScopeObjectPermissions              // Scope to adit object permissions
+	ScopeUserManagement                 // Scope to manage users
 )
 
+// CreateUserResponse is the response to a CreateUser call.
 type CreateUserResponse struct {
-	UserID   string `json:"userId"`
+	// ID of the newly created user.
+	UserID string `json:"userId"`
+
+	// Password of the newly created user.
 	Password string `json:"password"`
 }
 
+// CreateGroupResponse is the response to a CreateGroup call.
 type CreateGroupResponse struct {
+	// ID of the newly created group.
 	GroupID string `json:"groupId"`
 }
 
@@ -56,14 +69,24 @@ type CreateGroupResponse struct {
 //                              Encryption                             //
 /////////////////////////////////////////////////////////////////////////
 
+// EncryptResponse is the response to a Encrypt call.
 type EncryptResponse struct {
-	Ciphertext     []byte `json:"ciphertext"`
+	// Encrypted and authenticated data.
+	Ciphertext []byte `json:"ciphertext"`
+
+	// Plaintext authenticated data.
 	AssociatedData []byte `json:"associatedData"`
-	ObjectID       string `json:"objectId"`
+
+	// ID of the encrypted object.
+	ObjectID string `json:"objectId"`
 }
 
+// DecryptResponse is the response to a Decrypt call.
 type DecryptResponse struct {
-	Plaintext      []byte `json:"plaintext"`
+	// Decrypted and authenticated data.
+	Plaintext []byte `json:"plaintext"`
+
+	// Authenticated data.
 	AssociatedData []byte `json:"associatedData"`
 }
 
@@ -71,12 +94,18 @@ type DecryptResponse struct {
 //                               Storage                               //
 /////////////////////////////////////////////////////////////////////////
 
+// StoreResponse is the response to a Store call.
 type StoreResponse struct {
+	// ID of the stored object.
 	ObjectID string `json:"objectId"`
 }
 
+// RetrieveResponse is the response to a Retrieve call.
 type RetrieveResponse struct {
-	Plaintext      []byte `json:"plaintext"`
+	// Decrypted and authenticated data.
+	Plaintext []byte `json:"plaintext"`
+
+	// Authenticated data.
 	AssociatedData []byte `json:"associatedData"`
 }
 
@@ -84,6 +113,8 @@ type RetrieveResponse struct {
 //                             Permissions                             //
 /////////////////////////////////////////////////////////////////////////
 
+// GetPermissionsResponse is the response to a GetPermissions call.
 type GetPermissionsResponse struct {
+	// List of IDs that have permission to access the object.
 	GroupIDs []string `json:"groupIds"`
 }
