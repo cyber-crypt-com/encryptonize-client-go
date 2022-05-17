@@ -28,6 +28,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/credentials/insecure"
 	grpc_reflection "google.golang.org/grpc/reflection/grpc_reflection_v1alpha"
 )
 
@@ -54,7 +55,7 @@ func newBaseClient(ctx context.Context, endpoint, certPath string) (*baseClient,
 		}
 		dialOption = grpc.WithTransportCredentials(clientCredentials)
 	} else {
-		dialOption = grpc.WithInsecure()
+		dialOption = grpc.WithTransportCredentials(insecure.NewCredentials())
 	}
 
 	// Initialize connection with Encryptonize service
