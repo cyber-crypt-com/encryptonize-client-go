@@ -5,49 +5,73 @@ package keyserver
 import (
 	"testing"
 
+	"bytes"
 	"context"
 	"os"
+
+	"github.com/gofrs/uuid"
+
+	"github.com/cyber-crypt-com/encryptonize-key-server/service"
 )
 
-var endpoint = "127.0.0.1:50051"
+var endpoint = "localhost:50051"
 var certPath = ""
-var kikID = ""
+var kikID = uuid.Nil
+var kik = ""
 
 func TestMain(m *testing.M) {
 	// Get test enpoint and cert path
-	v, ok := os.LookupEnv("E2E_TEST_URL")
-	if ok {
+	if v, ok := os.LookupEnv("E2E_TEST_URL"); ok {
 		endpoint = v
 	}
-	v, ok = os.LookupEnv("E2E_TEST_CERT")
-	if ok {
+	if v, ok := os.LookupEnv("E2E_TEST_CERT"); ok {
 		certPath = v
 	}
 	// Get kik ID of a key generated with script
-	v, ok = os.LookupEnv("E2E_TEST_KIK_ID")
-	if ok {
-		kikID = v
+	if v, ok := os.LookupEnv("E2E_TEST_KIK_ID"); ok {
+		kikID = uuid.Must(uuid.FromString(v))
+	}
+	if v, ok := os.LookupEnv("E2E_TEST_KIK"); ok {
+		kik = v
 	}
 
 	os.Exit(m.Run())
 }
 
 func TestGetKeySet(t *testing.T) {
-	ksClient, err := NewClient(context.Background(), endpoint, certPath)
+	ksClient, err := NewClient(context.Background(), endpoint, certPath, kik, kikID)
 	if err != nil {
 		t.Fatalf("Failed to create client: %v", err)
 	}
 
-	nonce := []byte("random")
-	getKeySetResponse, err := ksClient.GetKeySet(kikID, nonce)
+	keys, err := ksClient.GetKeys()
 	if err != nil {
 		t.Fatalf("Failed to retrieve a key set: %v", err)
 	}
 
-	if getKeySetResponse.Nonce == nil {
-		t.Fatalf("Key set is not complete, nonce is missing: %v", err)
+	if len(keys.KEK) != service.KeySize {
+		t.Fatalf("Key is the wrong size")
 	}
-	if getKeySetResponse.WrappedKeys == nil {
-		t.Fatalf("Key set is not complete, kwp is missing: %v", err)
+	if len(keys.AEK) != service.KeySize {
+		t.Fatalf("Key is the wrong size")
+	}
+	if len(keys.TEK) != service.KeySize {
+		t.Fatalf("Key is the wrong size")
+	}
+	if len(keys.IEK) != service.KeySize {
+		t.Fatalf("Key is the wrong size")
+	}
+
+	if bytes.Equal(keys.KEK, make([]byte, service.KeySize)) {
+		t.Fatalf("Key is not initialized")
+	}
+	if bytes.Equal(keys.AEK, make([]byte, service.KeySize)) {
+		t.Fatalf("Key is not initialized")
+	}
+	if bytes.Equal(keys.TEK, make([]byte, service.KeySize)) {
+		t.Fatalf("Key is not initialized")
+	}
+	if bytes.Equal(keys.IEK, make([]byte, service.KeySize)) {
+		t.Fatalf("Key is not initialized")
 	}
 }
