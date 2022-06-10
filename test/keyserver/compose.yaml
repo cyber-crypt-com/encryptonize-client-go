@@ -16,11 +16,11 @@ x-service-variables: &service-variables
   KEYSERVER_STORAGE_PORT: "5432"
   KEYSERVER_STORAGE_DATABASE: &ks_db_name "keyserver"
   KEYSERVER_STORAGE_SSLMODE: "disable"
-  KEYSERVER_STORAGE_SCHEMA: "./data/ks_storage.sql"
+  KEYSERVER_STORAGE_SCHEMA: "./storage/ks_storage.sql"
 
 services:
   key-server:
-    image: ghcr.io/cyber-crypt-com/encryptonize-key-server:v0.1.14
+    image: ghcr.io/cyber-crypt-com/encryptonize-key-server:v0.1.15
     container_name: key-server
     environment:
       <<: *service-variables
