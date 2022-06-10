@@ -3,7 +3,7 @@
 Go client libraries for
 * [Encryptonize&reg; Core](https://github.com/cyber-crypt-com/encryptonize-core)
 * [Encryptonize&reg; Objects](https://github.com/cyber-crypt-com/encryptonize-objects)
-* [Encryptonize&reg; Key Server](TODO)
+* [Encryptonize&reg; Key Server](https://github.com/cyber-crypt-com/encryptonize-key-server)
 
 ## Usage
 In order to use the client you will need credentials for the Encryptonize Core server.
