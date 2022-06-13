@@ -16,7 +16,7 @@ x-config: &config
 
 services:
   encryptonize-objects:
-    image: ghcr.io/cyber-crypt-com/encryptonize-objects:v0.1.14
+    image: ghcr.io/cybercryptio/d1-service-storage:v0.1.14
     container_name: encryptonize-objects
     environment:
       <<: *config
@@ -38,7 +38,7 @@ services:
       - objects
 
   encryptonize-core:
-    image: ghcr.io/cyber-crypt-com/encryptonize-core:v0.1.29
+    image: ghcr.io/cybercryptio/d1-service-generic:v0.1.29
     container_name: encryptonize-core
     environment:
       <<: *config

@@ -11,7 +11,7 @@ import (
 
 	"github.com/gofrs/uuid"
 
-	"github.com/cyber-crypt-com/encryptonize-key-server/service"
+	"github.com/cybercryptio/k1/service"
 )
 
 var endpoint = "localhost:50051"

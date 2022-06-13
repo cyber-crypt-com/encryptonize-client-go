@@ -20,7 +20,7 @@ x-service-variables: &service-variables
 
 services:
   key-server:
-    image: ghcr.io/cyber-crypt-com/encryptonize-key-server:v0.1.15
+    image: ghcr.io/cybercryptio/k1:v0.1.19
     container_name: key-server
     environment:
       <<: *service-variables

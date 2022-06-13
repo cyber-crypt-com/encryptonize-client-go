@@ -11,9 +11,9 @@ import (
 	"encoding/json"
 	"strings"
 
-	"github.com/cyber-crypt-com/encryptonize-key-server/service"
-	"github.com/cyber-crypt-com/encryptonize-lib/crypto"
-	"github.com/cyber-crypt-com/encryptonize-lib/key"
+	"github.com/cybercryptio/d1-lib/crypto"
+	"github.com/cybercryptio/d1-lib/key"
+	"github.com/cybercryptio/k1/service"
 	"github.com/fullstorydev/grpcurl"
 	"github.com/gofrs/uuid"
 	"github.com/jhump/protoreflect/grpcreflect"

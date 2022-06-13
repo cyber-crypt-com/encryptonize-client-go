@@ -1,10 +1,10 @@
-module github.com/cyber-crypt-com/encryptonize-client-go
+module github.com/cybercryptio/d1-client-go
 
 go 1.18
 
 require (
-	github.com/cyber-crypt-com/encryptonize-key-server v0.1.16
-	github.com/cyber-crypt-com/encryptonize-lib v1.0.11
+	github.com/cybercryptio/d1-lib v1.0.12
+	github.com/cybercryptio/k1 v0.1.19
 	github.com/fullstorydev/grpcurl v1.8.6
 	github.com/gofrs/uuid v4.2.0+incompatible
 	github.com/jhump/protoreflect v1.12.0

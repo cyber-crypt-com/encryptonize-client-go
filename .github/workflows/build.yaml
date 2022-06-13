@@ -5,7 +5,7 @@ on: push
 env:
   # This tells Go to bypass the public proxies,
   # and download our private modules directly from the source.
-  GOPRIVATE: 'github.com/cyber-crypt-com/*'
+  GOPRIVATE: 'github.com/cybercryptio/*'
 
 jobs:
   client-build:
@@ -24,7 +24,7 @@ jobs:
       run: git config --global url.https://${{ secrets.CYBOT_TOKEN }}@github.com/.insteadOf https://github.com/
 
     - name: Setup and cache dependencies
-      uses: cyber-crypt-com/build-setup-action@master
+      uses: cybercryptio/build-setup-action@master
 
     - name: Lint
       run: make lint

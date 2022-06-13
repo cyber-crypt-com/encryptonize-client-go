@@ -128,10 +128,10 @@ github.com/cockroachdb/apd v1.1.0/go.mod h1:8Sl8LxpKi29FqWXR16WEFZRNSz3SoPzUzeMe
 github.com/coreos/go-systemd v0.0.0-20190321100706-95778dfbb74e/go.mod h1:F5haX7vjVVG0kc13fIWeqUViNPyEJxv/OmvnBo0Yme4=
 github.com/coreos/go-systemd v0.0.0-20190719114852-fd7a80b32e1f/go.mod h1:F5haX7vjVVG0kc13fIWeqUViNPyEJxv/OmvnBo0Yme4=
 github.com/creack/pty v1.1.7/go.mod h1:lj5s0c3V2DBrqTV7llrYr5NG6My20zk30Fl46Y7DoTY=
-github.com/cyber-crypt-com/encryptonize-key-server v0.1.16 h1:DNNbLKjWM4bTBdbz6Y51cOphK/4Qgzw+7PSRrUPjA2M=
-github.com/cyber-crypt-com/encryptonize-key-server v0.1.16/go.mod h1:WVQ59G89n6sT5kuoP65tkwGICCB4/AhUFaj89WC1tgg=
-github.com/cyber-crypt-com/encryptonize-lib v1.0.11 h1:tw6TbXNab72Bnj4gc/dhuyw5Mv0X3Mx7y/83IxXOpog=
-github.com/cyber-crypt-com/encryptonize-lib v1.0.11/go.mod h1:X3ih719deDShcnTQ20DrGF75STDuzPXdSDonJMHKJQY=
+github.com/cybercryptio/d1-lib v1.0.12 h1:JPMsb/Ixux83QX82tmU5D8Oork7OdOLR48mlBXyDnFw=
+github.com/cybercryptio/d1-lib v1.0.12/go.mod h1:NKw2QhI31McUhKB/P+syR+usXzvm5/ReqEeDJtBcX0o=
+github.com/cybercryptio/k1 v0.1.19 h1:YMqFtFkmSLQ7WpvvylHRGGLhTopmZl/9s2Xw1+0JcG0=
+github.com/cybercryptio/k1 v0.1.19/go.mod h1:7YyYDf3dBAyHMY9xA5FZ+iPblmvzW6yyoMq89DNtdp8=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=

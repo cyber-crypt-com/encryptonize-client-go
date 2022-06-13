@@ -72,9 +72,9 @@ docker-objects-test-down: ## Stop docker Objects test environment
 
 .PHONY: docker-keyserver-test
 docker-keyserver-test: docker-keyserver-test-up ## Run Key Server tests
-	KS_RESPONSE=$$(docker exec key-server /encryptonize-key-server newKeySet 2> /dev/null) && \
+	KS_RESPONSE=$$(docker exec key-server /k1 newKeySet 2> /dev/null) && \
 		KS_ID=$$(echo $$KS_RESPONSE | jq -r ".KsID") && \
-		KIK_RESPONSE=$$(docker exec key-server /encryptonize-key-server newKik --ksid=$$KS_ID 2> /dev/null) && \
+		KIK_RESPONSE=$$(docker exec key-server /k1 newKik --ksid=$$KS_ID 2> /dev/null) && \
 		export E2E_TEST_KIK_ID=$$(echo $$KIK_RESPONSE | jq -r ".KikID") && \
 		export E2E_TEST_KIK=$$(echo $$KIK_RESPONSE | jq -r ".Kik") && \
 		go test -v ./keyserver -count=1

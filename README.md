@@ -1,17 +1,17 @@
 # Go Client Library for Encryptonize&reg;
 
 Go client libraries for
-* [Encryptonize&reg; Core](https://github.com/cyber-crypt-com/encryptonize-core)
-* [Encryptonize&reg; Objects](https://github.com/cyber-crypt-com/encryptonize-objects)
-* [Encryptonize&reg; Key Server](https://github.com/cyber-crypt-com/encryptonize-key-server)
+* [Encryptonize&reg; Core](https://github.com/cybercryptio/d1-service-generic)
+* [Encryptonize&reg; Objects](https://github.com/cybercryptio/d1-service-storage)
+* [Encryptonize&reg; Key Server](https://github.com/cybercryptio/k1)
 
 ## Usage
 In order to use the client you will need credentials for the Encryptonize Core server.
 When setting up the server the first time, you need to bootstrap an initial user with credentials
 either through the executable as described
-[here](https://github.com/cyber-crypt-com/encryptonize-core/blob/master/documentation/user_manual.md#bootstrapping-users).
+[here](https://github.com/cybercryptio/d1-service-generic/blob/master/documentation/user_manual.md#bootstrapping-users).
 Subsequent users can be created through the API as described
-[here](https://github.com/cyber-crypt-com/encryptonize-core/blob/master/documentation/user_manual.md#creating-users-through-the-api).
+[here](https://github.com/cybercryptio/d1-service-generic/blob/master/documentation/user_manual.md#creating-users-through-the-api).
 
 The easiest way to use the Encryptonize&reg; Core client is through the `NewCoreClientWR`
 constructor. The resulting client will automatically refresh the user's access token when it
