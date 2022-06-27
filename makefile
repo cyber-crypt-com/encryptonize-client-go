@@ -20,7 +20,7 @@ lint: ## Lint the codebase
 tests: build ## Run tests against dockerized servers
 	@make docker-generic-test
 	@make docker-storage-test
-	@make docker-keyserver-test
+	@make docker-k1-test
 
 .PHONY: docker-generic-test
 docker-generic-test: docker-generic-test-up ## Run D1 Generic tests
@@ -58,20 +58,20 @@ docker-storage-test-up: ## Start docker D1 Storage test environment
 docker-storage-test-down: ## Stop docker D1 Storage test environment
 	docker-compose --profile storage -f test/d1/compose.yaml down -v
 
-.PHONY: docker-keyserver-test
-docker-keyserver-test: docker-keyserver-test-up ## Run Key Server tests
+.PHONY: docker-k1-test
+docker-k1-test: docker-k1-test-up ## Run Key Server tests
 	KS_RESPONSE=$$(docker exec key-server /k1 newKeySet 2> /dev/null) && \
 		KS_ID=$$(echo $$KS_RESPONSE | jq -r ".KsID") && \
 		KIK_RESPONSE=$$(docker exec key-server /k1 newKik --ksid=$$KS_ID 2> /dev/null) && \
 		export E2E_TEST_KIK_ID=$$(echo $$KIK_RESPONSE | jq -r ".KikID") && \
 		export E2E_TEST_KIK=$$(echo $$KIK_RESPONSE | jq -r ".Kik") && \
-		go test -v ./keyserver -count=1
-	@make docker-keyserver-test-down
+		go test -v ./k1 -count=1
+	@make docker-k1-test-down
 
-.PHONY: docker-keyserver-test-up
-docker-keyserver-test-up: ## Start docker Key Server test environment
-	docker-compose -f test/keyserver/compose.yaml up -d
+.PHONY: docker-k1-test-up
+docker-k1-test-up: ## Start docker Key Server test environment
+	docker-compose -f test/k1/compose.yaml up -d
 
-.PHONY: docker-keyserver-test-down
-docker-keyserver-test-down: ## Stop docker Key Server test environment
-	docker-compose -f test/keyserver/compose.yaml down -v
+.PHONY: docker-k1-test-down
+docker-k1-test-down: ## Stop docker Key Server test environment
+	docker-compose -f test/k1/compose.yaml down -v

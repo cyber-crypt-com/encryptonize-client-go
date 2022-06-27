@@ -1,7 +1,7 @@
 // Copyright 2020-2022 CYBERCRYPT
 
-// encryptonize-client-go/keyserver is a client library for the Encryptonize Key Server.
-package keyserver
+// d1-client-go/k1 is a client library for CYBERCRYPT K1.
+package k1
 
 import (
 	"bytes"
