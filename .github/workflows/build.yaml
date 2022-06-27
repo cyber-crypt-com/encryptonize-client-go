@@ -39,21 +39,7 @@ jobs:
         username: cybot-cc
         password: ${{ secrets.CYBOT_TOKEN }}
 
-    # On a branch, run tests but do not fail. This is so we can update the client
-    # before service changes are merged, avoiding a deadlock.
-    - name: Run tests on branch
-      id: branch_test
-      if: github.ref_name != 'master'
-      continue-on-error: true
-      run: make tests
-
-    - name: Warn on branch failure
-      if: github.ref_name != 'master' && steps.branch_test.outcome == 'failure'
-      run: echo "::warning title=Tests failed::Client tests failed!"
-
-    # On master, run tests as normal
-    - name: Run tests on master
-      if: github.ref_name == 'master'
+    - name: Run tests
       run: make tests
 
     - name: Install GitVersion
