@@ -1,6 +1,6 @@
 // Copyright 2020-2022 CYBERCRYPT
 
-package keyserver
+package k1
 
 import (
 	"testing"

@@ -6,7 +6,7 @@ help:  ## Display this help
 
 ##### Build targets #####
 .PHONY: build
-build: ## Build the Encryptonize client library
+build: ## Build the client library
 	go build -v ./...
 
 .PHONY: lint
@@ -17,61 +17,61 @@ lint: ## Lint the codebase
 
 ##### Test targets #####
 .PHONY: tests
-tests: build ## Run tests against Encryptonize server
-	@make docker-core-test
-	@make docker-objects-test
-	@make docker-keyserver-test
+tests: build ## Run tests against dockerized servers
+	@make docker-generic-test
+	@make docker-storage-test
+	@make docker-k1-test
 
-.PHONY: docker-core-test
-docker-core-test: docker-core-test-up ## Run Core tests
-	USER_INFO=$$(docker exec encryptonize-core /encryptonize-core create-user rcudiom  | tail -n 1) && \
+.PHONY: docker-generic-test
+docker-generic-test: docker-generic-test-up ## Run D1 Generic tests
+	USER_INFO=$$(docker exec d1-service-generic /d1-service-generic create-user rcudio  | tail -n 1) && \
 		export E2E_TEST_UID=$$(echo $$USER_INFO | jq -r ".user_id") && \
 		export E2E_TEST_PASS=$$(echo $$USER_INFO | jq -r ".password") && \
-		go test -v ./encryptonize -count=1 -run ^TestCore && \
-		go test -v ./encryptonize -count=1 -run ^TestEncrypt
-	@make docker-core-test-down
+		go test -v ./d1 -count=1 -run ^TestBase && \
+		go test -v ./d1 -count=1 -run ^TestGeneric
+	@make docker-generic-test-down
 
-.PHONY: docker-core-test-up
-docker-core-test-up: ## Start docker Core test environment
-	cd test/encryptonize && \
-		docker-compose --profile core up -d
+.PHONY: docker-generic-test-up
+docker-generic-test-up: ## Start docker D1 Generic test environment
+	cd test/d1 && \
+	docker-compose --profile generic up -d
 
-.PHONY: docker-core-test-down
-docker-core-test-down: ## Stop docker Core test environment
-	docker-compose --profile core -f test/encryptonize/compose.yaml down -v
+.PHONY: docker-generic-test-down
+docker-generic-test-down: ## Stop docker D1 Generic test environment
+	docker-compose --profile generic -f test/d1/compose.yaml down -v
 
-.PHONY: docker-objects-test
-docker-objects-test: docker-objects-test-up ## Run objects tests
-	USER_INFO=$$(docker exec encryptonize-objects /encryptonize-objects create-user rcudiom  | tail -n 1) && \
+.PHONY: docker-storage-test
+docker-storage-test: docker-storage-test-up ## Run D1 Storage tests
+	USER_INFO=$$(docker exec d1-service-storage /d1-service-storage create-user rcudio  | tail -n 1) && \
 		export E2E_TEST_UID=$$(echo $$USER_INFO | jq -r ".user_id") && \
 		export E2E_TEST_PASS=$$(echo $$USER_INFO | jq -r ".password") && \
-		go test -v ./encryptonize -count=1 -run ^TestCore && \
-		go test -v ./encryptonize -count=1 -run ^TestObjects
-	@make docker-objects-test-down
+		go test -v ./d1 -count=1 -run ^TestBase && \
+		go test -v ./d1 -count=1 -run ^TestStorage
+	@make docker-storage-test-down
 
-.PHONY: docker-objects-test-up
-docker-objects-test-up: ## Start docker Objects test environment
-	cd test/encryptonize && \
-		docker-compose --profile objects up -d
+.PHONY: docker-storage-test-up
+docker-storage-test-up: ## Start docker D1 Storage test environment
+	cd test/d1 && \
+	docker-compose --profile storage up -d
 
-.PHONY: docker-objects-test-down
-docker-objects-test-down: ## Stop docker Objects test environment
-	docker-compose --profile objects -f test/encryptonize/compose.yaml down -v
+.PHONY: docker-storage-test-down
+docker-storage-test-down: ## Stop docker D1 Storage test environment
+	docker-compose --profile storage -f test/d1/compose.yaml down -v
 
-.PHONY: docker-keyserver-test
-docker-keyserver-test: docker-keyserver-test-up ## Run Key Server tests
+.PHONY: docker-k1-test
+docker-k1-test: docker-k1-test-up ## Run Key Server tests
 	KS_RESPONSE=$$(docker exec key-server /k1 newKeySet 2> /dev/null) && \
 		KS_ID=$$(echo $$KS_RESPONSE | jq -r ".KsID") && \
 		KIK_RESPONSE=$$(docker exec key-server /k1 newKik --ksid=$$KS_ID 2> /dev/null) && \
 		export E2E_TEST_KIK_ID=$$(echo $$KIK_RESPONSE | jq -r ".KikID") && \
 		export E2E_TEST_KIK=$$(echo $$KIK_RESPONSE | jq -r ".Kik") && \
-		go test -v ./keyserver -count=1
-	@make docker-keyserver-test-down
+		go test -v ./k1 -count=1
+	@make docker-k1-test-down
 
-.PHONY: docker-keyserver-test-up
-docker-keyserver-test-up: ## Start docker Key Server test environment
-	docker-compose -f test/keyserver/compose.yaml up -d
+.PHONY: docker-k1-test-up
+docker-k1-test-up: ## Start docker Key Server test environment
+	docker-compose -f test/k1/compose.yaml up -d
 
-.PHONY: docker-keyserver-test-down
-docker-keyserver-test-down: ## Stop docker Key Server test environment
-	docker-compose -f test/keyserver/compose.yaml down -v
+.PHONY: docker-k1-test-down
+docker-k1-test-down: ## Stop docker Key Server test environment
+	docker-compose -f test/k1/compose.yaml down -v
