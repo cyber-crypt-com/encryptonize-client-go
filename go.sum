@@ -130,8 +130,8 @@ github.com/cockroachdb/apd v1.1.0/go.mod h1:8Sl8LxpKi29FqWXR16WEFZRNSz3SoPzUzeMe
 github.com/coreos/go-systemd v0.0.0-20190321100706-95778dfbb74e/go.mod h1:F5haX7vjVVG0kc13fIWeqUViNPyEJxv/OmvnBo0Yme4=
 github.com/coreos/go-systemd v0.0.0-20190719114852-fd7a80b32e1f/go.mod h1:F5haX7vjVVG0kc13fIWeqUViNPyEJxv/OmvnBo0Yme4=
 github.com/creack/pty v1.1.7/go.mod h1:lj5s0c3V2DBrqTV7llrYr5NG6My20zk30Fl46Y7DoTY=
-github.com/cybercryptio/d1-lib v1.0.17-ci.44 h1:CPVm26ON8KK84PJ/0iDvQeisyiE40Rh035b7191Bd+Q=
-github.com/cybercryptio/d1-lib v1.0.17-ci.44/go.mod h1:Z2GAYfV+u081e5wZuyb1N+rlX/Z3vtKuRC1RXYtYsCE=
+github.com/cybercryptio/d1-lib v1.0.17-ci.79 h1:eeUACcnI7WjKnBZzXYK4zMvvKVJz7vY2FCtz7IE2wzM=
+github.com/cybercryptio/d1-lib v1.0.17-ci.79/go.mod h1:Z2GAYfV+u081e5wZuyb1N+rlX/Z3vtKuRC1RXYtYsCE=
 github.com/cybercryptio/d1-service-generic v0.1.47-ci.46.0.20220630085814-538c83d4573c h1:ZlFCqqMBHUZM8VWCmS32owqbuoZSH1CDH+iBBODCCFM=
 github.com/cybercryptio/d1-service-generic v0.1.47-ci.46.0.20220630085814-538c83d4573c/go.mod h1:1+KZwdw5rlArAXsqCEyWiuGxtl2Btbs8dMYHJg1nONs=
 github.com/cybercryptio/d1-service-storage v0.1.25-ci.86.0.20220701104646-2f7c01678b80 h1:LVXKwL+5prweVx3+Q7nIVmsj6mDARYae/Md8wDtTZmE=
