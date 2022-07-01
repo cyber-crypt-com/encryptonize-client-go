@@ -9,7 +9,7 @@ import (
 // GenericClient can be used to make calls to a D1 Generic service.
 type GenericClient struct {
 	BaseClient
-	pb.CoreClient
+	pb.GenericClient
 }
 
 // NewGenericClient creates a new client for the given endpoint. If certPath is not empty, TLS will
@@ -21,8 +21,8 @@ func NewGenericClient(endpoint, certPath string) (GenericClient, error) {
 	}
 
 	return GenericClient{
-		BaseClient: base,
-		CoreClient: pb.NewCoreClient(base.connection),
+		BaseClient:    base,
+		GenericClient: pb.NewGenericClient(base.connection),
 	}, nil
 }
 
@@ -35,7 +35,7 @@ func NewGenericClientWR(endpoint, certPath, uid, password string) (GenericClient
 	}
 
 	return GenericClient{
-		BaseClient: base,
-		CoreClient: pb.NewCoreClient(base.connection),
+		BaseClient:    base,
+		GenericClient: pb.NewGenericClient(base.connection),
 	}, nil
 }
