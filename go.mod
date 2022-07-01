@@ -3,9 +3,9 @@ module github.com/cybercryptio/d1-client-go
 go 1.18
 
 require (
-	github.com/cybercryptio/d1-lib v1.0.17-ci.31
-	github.com/cybercryptio/d1-service-generic v0.1.47-ci.29
-	github.com/cybercryptio/d1-service-storage v0.1.25-ci.61
+	github.com/cybercryptio/d1-lib v1.0.17-ci.44
+	github.com/cybercryptio/d1-service-generic v0.1.47-ci.46.0.20220630085814-538c83d4573c
+	github.com/cybercryptio/d1-service-storage v0.1.25-ci.86.0.20220701104646-2f7c01678b80
 	github.com/cybercryptio/k1 v0.1.20
 	github.com/fullstorydev/grpcurl v1.8.6
 	github.com/gofrs/uuid v4.2.0+incompatible
