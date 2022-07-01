@@ -24,3 +24,7 @@ clients run `make build`.
 
 The D1 Generic and Storage clients can be tested against a docker deployment of the services by running
 `make docker-generic-test` and `make docker-storage-test`.
+
+## License
+
+The software in the CYBERCRYPT d1-client-go repository is licensed under the Apache License 2.0.
