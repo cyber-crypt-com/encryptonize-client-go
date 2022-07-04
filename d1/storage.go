@@ -21,7 +21,7 @@ import (
 // GenericClient can be used to make calls to a D1 Storage service.
 type StorageClient struct {
 	BaseClient
-	pb.ObjectsClient
+	pb.StorageClient
 }
 
 // NewStorageClient creates a new client for the given endpoint. If certPath is not empty, TLS will
@@ -34,7 +34,7 @@ func NewStorageClient(endpoint, certPath string) (StorageClient, error) {
 
 	return StorageClient{
 		BaseClient:    base,
-		ObjectsClient: pb.NewObjectsClient(base.connection),
+		StorageClient: pb.NewStorageClient(base.connection),
 	}, nil
 }
 
@@ -48,6 +48,6 @@ func NewStorageClientWR(endpoint, certPath, uid, password string) (StorageClient
 
 	return StorageClient{
 		BaseClient:    base,
-		ObjectsClient: pb.NewObjectsClient(base.connection),
+		StorageClient: pb.NewStorageClient(base.connection),
 	}, nil
 }
