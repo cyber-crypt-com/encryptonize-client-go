@@ -87,7 +87,7 @@ EOF
 
 for FILE in $CLIENT_DIR/*.go; do
   LN_PACKAGE=$(grep 'package' $FILE -n -m 1 | cut --delimiter=":" --fields=1)
-  LN_BEFORE_PACKAGE=$(expr $LN_PACKAGE - 1)
+  LN_BEFORE_PACKAGE=$((LN_PACKAGE - 1))
   sed -i -e 1,${LN_BEFORE_PACKAGE}d $FILE
   add_header $FILE
 done
