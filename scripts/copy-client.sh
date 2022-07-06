@@ -1,5 +1,6 @@
 #!/bin/bash
 set -euo pipefail
+IFS=$'\n\t'
 
 SCRIPT=$(basename $0)
 CLIENT=$1
