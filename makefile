@@ -16,6 +16,19 @@
 help:  ## Display this help
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make <target> \033[36m\033[0m\n\nTargets:\n"} /^[a-zA-Z_-]+:.*?##/ { printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
+# Check that given variables are set and all have non-empty values,
+# die with an error otherwise.
+#
+# Params:
+#   1. Variable name(s) to test.
+#   2. (optional) Error message to print.
+check_defined = \
+    $(strip $(foreach 1,$1, \
+        $(call __check_defined,$1,$(strip $(value 2)))))
+__check_defined = \
+    $(if $(value $1),, \
+      $(error Undefined $1$(if $2, ($2))))
+
 ##### Build targets #####
 .PHONY: build
 build: ## Build the client library
@@ -87,3 +100,13 @@ docker-k1-test-up: ## Start docker Key Server test environment
 .PHONY: docker-k1-test-down
 docker-k1-test-down: ## Stop docker Key Server test environment
 	docker-compose -f test/k1/compose.yaml down -v
+
+.PHONY: copy-generic-client
+copy-generic-client: ## Copy D1 Generic client source code into this repo
+	$(call check_defined, VERSION, Usage: make copy-generic-client VERSION=<version>)
+	./scripts/copy-client.sh generic ${VERSION}
+
+.PHONY: copy-storage-client
+copy-storage-client: ## Copy D1 Storage client source code into this repo
+	$(call check_defined, VERSION, Usage: make copy-storage-client VERSION=<version>)
+	./scripts/copy-client.sh storage ${VERSION}
