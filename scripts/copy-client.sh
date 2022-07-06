@@ -19,8 +19,10 @@ mkdir $CLIENT_PROTOBUF_DIR
 
 # checkout service repo
 rm -rf checkout
-git clone --config advice.detachedHead=false --branch $VERSION --depth=1 $REPO checkout
+git clone --depth=1 $REPO checkout
 cd checkout
+git fetch --quiet --tags
+git checkout --quiet $VERSION
 SRC_DIR=$(pwd)
 
 # copy client source files
