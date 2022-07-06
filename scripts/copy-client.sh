@@ -19,9 +19,7 @@ mkdir $CLIENT_PROTOBUF_DIR
 
 # checkout service repo
 rm -rf checkout
-#git clone --branch $VERSION --depth=1 $REPO checkout 2> /dev/null
 git clone --config advice.detachedHead=false --branch $VERSION --depth=1 $REPO checkout
-#git clone --branch $VERSION --depth=1 $REPO checkout
 cd checkout
 SRC_DIR=$(pwd)
 
