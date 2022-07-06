@@ -90,6 +90,6 @@ done
 
 go mod tidy
 
-GREEN='\033[0;32m'
-NC='\033[0m' # No Color
-printf "${GREEN}Client '${TARGET}' is now running version '${VERSION}'${NC}\n"
+COLOR_GREEN='\033[0;32m'
+COLOR_NONE='\033[0m'
+printf "${COLOR_GREEN}Client '${TARGET}' is now running version '${VERSION}'${COLOR_NONE}\n"
