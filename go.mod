@@ -4,13 +4,12 @@ go 1.18
 
 require (
 	github.com/cybercryptio/d1-lib v1.0.17-ci.79
-	github.com/cybercryptio/d1-service-generic v0.1.47-ci.71
-	github.com/cybercryptio/d1-service-storage v0.1.25-ci.118
 	github.com/cybercryptio/k1 v0.1.20
 	github.com/fullstorydev/grpcurl v1.8.6
 	github.com/gofrs/uuid v4.2.0+incompatible
 	github.com/jhump/protoreflect v1.12.0
 	google.golang.org/grpc v1.47.0
+	google.golang.org/protobuf v1.28.0
 )
 
 require (
@@ -67,6 +66,5 @@ require (
 	google.golang.org/api v0.85.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto v0.0.0-20220627200112-0a929928cb33 // indirect
-	google.golang.org/protobuf v1.28.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
