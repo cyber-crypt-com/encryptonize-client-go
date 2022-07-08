@@ -4,7 +4,7 @@
 // - protoc             v3.6.1
 // source: storage.proto
 
-package protobuf
+package storage
 
 import (
 	context "context"
@@ -42,7 +42,7 @@ func NewStorageClient(cc grpc.ClientConnInterface) StorageClient {
 
 func (c *storageClient) Store(ctx context.Context, in *StoreRequest, opts ...grpc.CallOption) (*StoreResponse, error) {
 	out := new(StoreResponse)
-	err := c.cc.Invoke(ctx, "/d1.Storage/Store", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/d1.storage.Storage/Store", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +51,7 @@ func (c *storageClient) Store(ctx context.Context, in *StoreRequest, opts ...grp
 
 func (c *storageClient) Retrieve(ctx context.Context, in *RetrieveRequest, opts ...grpc.CallOption) (*RetrieveResponse, error) {
 	out := new(RetrieveResponse)
-	err := c.cc.Invoke(ctx, "/d1.Storage/Retrieve", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/d1.storage.Storage/Retrieve", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +60,7 @@ func (c *storageClient) Retrieve(ctx context.Context, in *RetrieveRequest, opts 
 
 func (c *storageClient) Update(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*UpdateResponse, error) {
 	out := new(UpdateResponse)
-	err := c.cc.Invoke(ctx, "/d1.Storage/Update", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/d1.storage.Storage/Update", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +69,7 @@ func (c *storageClient) Update(ctx context.Context, in *UpdateRequest, opts ...g
 
 func (c *storageClient) Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error) {
 	out := new(DeleteResponse)
-	err := c.cc.Invoke(ctx, "/d1.Storage/Delete", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/d1.storage.Storage/Delete", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -130,7 +130,7 @@ func _Storage_Store_Handler(srv interface{}, ctx context.Context, dec func(inter
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/d1.Storage/Store",
+		FullMethod: "/d1.storage.Storage/Store",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(StorageServer).Store(ctx, req.(*StoreRequest))
@@ -148,7 +148,7 @@ func _Storage_Retrieve_Handler(srv interface{}, ctx context.Context, dec func(in
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/d1.Storage/Retrieve",
+		FullMethod: "/d1.storage.Storage/Retrieve",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(StorageServer).Retrieve(ctx, req.(*RetrieveRequest))
@@ -166,7 +166,7 @@ func _Storage_Update_Handler(srv interface{}, ctx context.Context, dec func(inte
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/d1.Storage/Update",
+		FullMethod: "/d1.storage.Storage/Update",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(StorageServer).Update(ctx, req.(*UpdateRequest))
@@ -184,7 +184,7 @@ func _Storage_Delete_Handler(srv interface{}, ctx context.Context, dec func(inte
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/d1.Storage/Delete",
+		FullMethod: "/d1.storage.Storage/Delete",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(StorageServer).Delete(ctx, req.(*DeleteRequest))
@@ -196,7 +196,7 @@ func _Storage_Delete_Handler(srv interface{}, ctx context.Context, dec func(inte
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Storage_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "d1.Storage",
+	ServiceName: "d1.storage.Storage",
 	HandlerType: (*StorageServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
