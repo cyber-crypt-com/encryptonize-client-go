@@ -16,6 +16,19 @@
 help:  ## Display this help
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make <target> \033[36m\033[0m\n\nTargets:\n"} /^[a-zA-Z_-]+:.*?##/ { printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
+# Check that given variables are set and all have non-empty values,
+# die with an error otherwise.
+#
+# Params:
+#   1. Variable name(s) to test.
+#   2. (optional) Error message to print.
+check_defined = \
+    $(strip $(foreach 1,$1, \
+        $(call __check_defined,$1,$(strip $(value 2)))))
+__check_defined = \
+    $(if $(value $1),, \
+      $(error Undefined $1$(if $2, ($2))))
+
 ##### Build targets #####
 .PHONY: build
 build: ## Build the client library
@@ -34,13 +47,15 @@ tests: build ## Run tests against dockerized servers
 	@make docker-storage-test
 	@make docker-k1-test
 
+# TODO: This is a temporary workaround to prevent the build from breaking.
+# There are currently no actual tests in ./d1-generic,
+# but we will keep this rule and related test resources for now.
 .PHONY: docker-generic-test
 docker-generic-test: docker-generic-test-up ## Run D1 Generic tests
 	USER_INFO=$$(docker exec d1-service-generic /d1-service-generic create-user rcudio  | tail -n 1) && \
 		export E2E_TEST_UID=$$(echo $$USER_INFO | jq -r ".user_id") && \
 		export E2E_TEST_PASS=$$(echo $$USER_INFO | jq -r ".password") && \
-		go test -v ./d1 -count=1 -run ^TestBase && \
-		go test -v ./d1 -count=1 -run ^TestGeneric
+		go test -v ./d1-generic -count=1
 	@make docker-generic-test-down
 
 .PHONY: docker-generic-test-up
@@ -52,13 +67,15 @@ docker-generic-test-up: ## Start docker D1 Generic test environment
 docker-generic-test-down: ## Stop docker D1 Generic test environment
 	docker-compose --profile generic -f test/d1/compose.yaml down -v
 
+# TODO: This is a temporary workaround to prevent the build from breaking.
+# There are currently no actual tests in ./d1-storage,
+# but we will keep this rule and related test resources for now.
 .PHONY: docker-storage-test
 docker-storage-test: docker-storage-test-up ## Run D1 Storage tests
 	USER_INFO=$$(docker exec d1-service-storage /d1-service-storage create-user rcudio  | tail -n 1) && \
 		export E2E_TEST_UID=$$(echo $$USER_INFO | jq -r ".user_id") && \
 		export E2E_TEST_PASS=$$(echo $$USER_INFO | jq -r ".password") && \
-		go test -v ./d1 -count=1 -run ^TestBase && \
-		go test -v ./d1 -count=1 -run ^TestStorage
+		go test -v ./d1-storage -count=1
 	@make docker-storage-test-down
 
 .PHONY: docker-storage-test-up
@@ -87,3 +104,13 @@ docker-k1-test-up: ## Start docker Key Server test environment
 .PHONY: docker-k1-test-down
 docker-k1-test-down: ## Stop docker Key Server test environment
 	docker-compose -f test/k1/compose.yaml down -v
+
+.PHONY: copy-generic-client
+copy-generic-client: ## Copy D1 Generic client source code into this repo
+	$(call check_defined, VERSION, Usage: make copy-generic-client VERSION=<version>)
+	./scripts/copy-client.sh generic ${VERSION}
+
+.PHONY: copy-storage-client
+copy-storage-client: ## Copy D1 Storage client source code into this repo
+	$(call check_defined, VERSION, Usage: make copy-storage-client VERSION=<version>)
+	./scripts/copy-client.sh storage ${VERSION}
