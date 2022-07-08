@@ -37,38 +37,39 @@ git checkout --quiet "$VERSION"
 COMMIT_ID=$(git rev-parse HEAD)
 SRC_DIR=$(pwd)
 
-# replace reads text from STDIN, replaces all occurrences
-# of $1 with $2, and returns it on STDOUT
-replace() {
+# sed_replace creates a sed expression that can be used to replace
+# occurences of $1 with $2.
+sed_replace() {
     OLD_VALUE=$1
     NEW_VALUE=$2
-    sed -e "s|${OLD_VALUE}|${NEW_VALUE}|g"
+    echo "s|${OLD_VALUE}|${NEW_VALUE}|g"
 }
 
+# remove_copyright_comments reads Go source code as text from STDIN,
+# replaces all occurences of copyright comments, and writes the result to STDOUT.
+remove_copyright_comments() {
+    sed -e "$(sed_replace '// Copyright .* CYBERCRYPT' '')"
+}
+
+# fix_go_imports reads Go source code as text from STDIN,
+# replaces occurences of go imports targeting the service repos with imports
+# to the client repo, and writes the result to STDOUT.
 fix_go_imports() {
-    replace \
-        'd1-service-generic/client' \
-        'd1-client-go/d1-generic' \
-    | replace \
-        'd1-service-generic/protobuf' \
-        'd1-client-go/d1-generic/protobuf' \
-    | replace \
-        'd1-service-storage/client' \
-        'd1-client-go/d1-storage' \
-    | replace \
-        'd1-service-storage/protobuf' \
-        'd1-client-go/d1-storage/protobuf'
+    sed -e "
+        $(sed_replace 'd1-service-generic/client'   'd1-client-go/d1-generic'           ) ;
+        $(sed_replace 'd1-service-generic/protobuf' 'd1-client-go/d1-generic/protobuf'  ) ;
+        $(sed_replace 'd1-service-storage/client'   'd1-client-go/d1-storage'           ) ;
+        $(sed_replace 'd1-service-storage/protobuf' 'd1-client-go/d1-storage/protobuf'  ) ;
+    "
 }
 
-# process_source_file takes a go source file (specified as a path through $1)
-# applies the following adjustments and returns it on STDOUT:
+# fix_client_source reads Go client source code as reads text from STDIN,
+# applies the following adjustments and writes the result to STDOUT:
 # - Prepends an Apache license header
 # - Prepends a DO NOT EDIT reminder with source information
 # - Removes existing copyright comments
 # - Replaces various Go imports to make it work from the new location
-process_source_file() {
-    FILE=$1
-
+fix_client_source() {
     # output an Apache license header and a "DO NOT EDIT" reminder.
     cat << EOF
 // Copyright 2022 CYBERCRYPT
@@ -92,9 +93,7 @@ process_source_file() {
 
 EOF
 
-    < "$FILE" \
-    replace '// Copyright .* CYBERCRYPT' '' \
-    | fix_go_imports
+    remove_copyright_comments | fix_go_imports
 }
 
 # copy and process client source files
@@ -105,10 +104,10 @@ for GO_FILE in $GO_FILES; do
     DST_PATH=$(realpath --canonicalize-missing "${CLIENT_DIR}/${GO_FILE}")
     DST_DIR=$(dirname "$DST_PATH")
     mkdir -p "$DST_DIR"
-    process_source_file "$SRC_PATH" > "$DST_PATH"
+    fix_client_source < "$SRC_PATH" > "$DST_PATH"
 done
 
-# copy protobuf source files
+# copy and process protobuf source files
 cd "${SRC_DIR}/protobuf"
 GO_FILES=$(find . -name \*.go)
 for GO_FILE in $GO_FILES; do
@@ -116,10 +115,11 @@ for GO_FILE in $GO_FILES; do
     DST_PATH=$(realpath --canonicalize-missing "${CLIENT_PROTOBUF_DIR}/${GO_FILE}")
     DST_DIR=$(dirname "$DST_PATH")
     mkdir -p "$DST_DIR"
-    < "$SRC_PATH" fix_go_imports > "$DST_PATH"
+    fix_go_imports < "$SRC_PATH" > "$DST_PATH"
 done
 
-gofmt -l -w "$CLIENT_DIR"
+# Fix source code formatting
+gofmt -w "$CLIENT_DIR"
 
 cd "$CURRENT_DIR"
 go mod tidy
