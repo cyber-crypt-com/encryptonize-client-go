@@ -119,7 +119,9 @@ cd "${SRC_DIR}/client"
 GO_FILES=$(find . -name \*.go)
 for GO_FILE in $GO_FILES; do
     SRC_PATH=$(realpath "$GO_FILE")
-    DST_PATH=$(realpath "${CLIENT_DIR}/${GO_FILE}")
+    DST_PATH=$(realpath --canonicalize-missing "${CLIENT_DIR}/${GO_FILE}")
+    DST_DIR=$(dirname "$DST_PATH")
+    mkdir -p "$DST_DIR"
     process_source_file "$SRC_PATH" > "$DST_PATH"
 done
 
@@ -128,7 +130,9 @@ cd "${SRC_DIR}/protobuf"
 GO_FILES=$(find . -name \*.go)
 for GO_FILE in $GO_FILES; do
     SRC_PATH=$(realpath "$GO_FILE")
-    DST_PATH=$(realpath "${CLIENT_PROTOBUF_DIR}/${GO_FILE}")
+    DST_PATH=$(realpath --canonicalize-missing "${CLIENT_PROTOBUF_DIR}/${GO_FILE}")
+    DST_DIR=$(dirname "$DST_PATH")
+    mkdir -p "$DST_DIR"
     cp "$SRC_PATH" "$DST_PATH"
 done
 
