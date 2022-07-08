@@ -2,7 +2,7 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-SCRIPT=$(basename $0)
+SCRIPT=$(basename "$0")
 CLIENT=$1
 VERSION=$2
 
@@ -11,27 +11,27 @@ CHECKOUT_DIR=$(mktemp -d)
 
 finish() {
     # clean up temporary checkout directory
-    rm -rf $CHECKOUT_DIR
+    rm -rf "$CHECKOUT_DIR"
     # return to previous working directory
-    cd $CURRENT_DIR
+    cd "$CURRENT_DIR"
 }
 trap finish EXIT
 
 REPO="https://github.com/cybercryptio/d1-service-${CLIENT}.git"
 TARGET="d1-${CLIENT}"
 
-CLIENT_DIR=$(realpath $TARGET)
+CLIENT_DIR=$(realpath "$TARGET")
 CLIENT_PROTOBUF_DIR=$CLIENT_DIR/protobuf
 
 # prepare target directories
-rm -rf $CLIENT_DIR
-mkdir $CLIENT_DIR
-mkdir $CLIENT_PROTOBUF_DIR
+rm -rf "$CLIENT_DIR"
+mkdir "$CLIENT_DIR"
+mkdir "$CLIENT_PROTOBUF_DIR"
 
 # checkout service repo
-rm -rf $CHECKOUT_DIR
-git clone $REPO $CHECKOUT_DIR
-cd $CHECKOUT_DIR
+rm -rf "$CHECKOUT_DIR"
+git clone "$REPO" "$CHECKOUT_DIR"
+cd "$CHECKOUT_DIR"
 git fetch --quiet --tags
 git checkout --quiet "$VERSION"
 COMMIT_ID=$(git rev-parse HEAD)
@@ -45,8 +45,8 @@ remove_copyright_comments() {
     local MODE=$MODE_KEEP
     local IFS=''
 
-    while read LINE; do
-        if [[ $MODE == $MODE_KEEP ]]; then
+    while read -r LINE; do
+        if [[ $MODE == "$MODE_KEEP" ]]; then
             if [[ "$LINE" =~ '// Copyright'.*'CYBERCRYPT' ]]; then
                 MODE=$MODE_SKIP
             else
@@ -99,8 +99,7 @@ process_source_file() {
 
 EOF
 
-    cat $FILE \
-    | remove_copyright_comments \
+    remove_copyright_comments < "$FILE" \
     | replace \
         'd1-service-generic/client' \
         'd1-client-go/d1-generic' \
@@ -116,26 +115,27 @@ EOF
 }
 
 # copy and process client source files
-cd $SRC_DIR/client
+cd "${SRC_DIR}/client"
 GO_FILES=$(find . -name \*.go)
 for GO_FILE in $GO_FILES; do
-    SRC_PATH=$(realpath $GO_FILE)
-    DST_PATH=$(realpath $CLIENT_DIR/$GO_FILE)
-    process_source_file $SRC_PATH > $DST_PATH
+    SRC_PATH=$(realpath "$GO_FILE")
+    DST_PATH=$(realpath "${CLIENT_DIR}/${GO_FILE}")
+    process_source_file "$SRC_PATH" > "$DST_PATH"
 done
 
 # copy protobuf source files
-cd $SRC_DIR/protobuf
+cd "${SRC_DIR}/protobuf"
 GO_FILES=$(find . -name \*.go)
 for GO_FILE in $GO_FILES; do
-    SRC_PATH=$(realpath $GO_FILE)
-    DST_PATH=$(realpath $CLIENT_PROTOBUF_DIR/$GO_FILE)
-    cp $SRC_PATH $DST_PATH
+    SRC_PATH=$(realpath "$GO_FILE")
+    DST_PATH=$(realpath "${CLIENT_PROTOBUF_DIR}/${GO_FILE}")
+    cp "$SRC_PATH" "$DST_PATH"
 done
 
-cd $CURRENT_DIR
+cd "$CURRENT_DIR"
 go mod tidy
 
 COLOR_GREEN='\033[0;32m'
 COLOR_NONE='\033[0m'
-printf "${COLOR_GREEN}Client '${TARGET}' is now running version '${VERSION} (${COMMIT_ID})'${COLOR_NONE}\n"
+MESSAGE="Client '${TARGET}' is now running version '${VERSION} (${COMMIT_ID})'"
+echo -e "${COLOR_GREEN}${MESSAGE}${COLOR_NONE}"
