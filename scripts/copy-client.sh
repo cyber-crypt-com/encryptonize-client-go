@@ -37,28 +37,6 @@ git checkout --quiet "$VERSION"
 COMMIT_ID=$(git rev-parse HEAD)
 SRC_DIR=$(pwd)
 
-# remove_copyright_comments reads text from STDIN,
-# removes all copyright comments and returns it on STDOUT
-remove_copyright_comments() {
-    local MODE_KEEP='keep'
-    local MODE_SKIP='skip'
-    local MODE=$MODE_KEEP
-    local IFS=''
-
-    while read -r LINE; do
-        if [[ $MODE == "$MODE_KEEP" ]]; then
-            if [[ "$LINE" =~ '// Copyright'.*'CYBERCRYPT' ]]; then
-                MODE=$MODE_SKIP
-            else
-                echo "$LINE"
-            fi
-        elif [[ "$LINE" != "" ]]; then
-            MODE=$MODE_KEEP
-            echo "$LINE"
-        fi
-    done
-}
-
 # replace reads text from STDIN, replaces all occurrences
 # of $1 with $2, and returns it on STDOUT
 replace() {
@@ -114,7 +92,8 @@ process_source_file() {
 
 EOF
 
-    remove_copyright_comments < "$FILE" \
+    < "$FILE" \
+    replace '// Copyright .* CYBERCRYPT' '' \
     | fix_go_imports
 }
 
@@ -139,6 +118,8 @@ for GO_FILE in $GO_FILES; do
     mkdir -p "$DST_DIR"
     < "$SRC_PATH" fix_go_imports > "$DST_PATH"
 done
+
+gofmt -l -w "$CLIENT_DIR"
 
 cd "$CURRENT_DIR"
 go mod tidy
