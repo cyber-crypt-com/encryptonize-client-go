@@ -30,10 +30,8 @@ mkdir "$CLIENT_PROTOBUF_DIR"
 
 # checkout service repo
 rm -rf "$CHECKOUT_DIR"
-git clone "$REPO" "$CHECKOUT_DIR"
+git clone --config advice.detachedHead=false -b "$VERSION" "$REPO" "$CHECKOUT_DIR"
 cd "$CHECKOUT_DIR"
-git fetch --quiet --tags
-git checkout --quiet "$VERSION"
 COMMIT_ID=$(git rev-parse HEAD)
 SRC_DIR=$(pwd)
 
