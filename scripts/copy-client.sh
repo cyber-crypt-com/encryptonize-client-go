@@ -67,6 +67,21 @@ replace() {
     sed -e "s|${OLD_VALUE}|${NEW_VALUE}|g"
 }
 
+fix_go_imports() {
+    replace \
+        'd1-service-generic/client' \
+        'd1-client-go/d1-generic' \
+    | replace \
+        'd1-service-generic/protobuf' \
+        'd1-client-go/d1-generic/protobuf' \
+    | replace \
+        'd1-service-storage/client' \
+        'd1-client-go/d1-storage' \
+    | replace \
+        'd1-service-storage/protobuf' \
+        'd1-client-go/d1-storage/protobuf'
+}
+
 # process_source_file takes a go source file (specified as a path through $1)
 # applies the following adjustments and returns it on STDOUT:
 # - Prepends an Apache license header
@@ -100,18 +115,7 @@ process_source_file() {
 EOF
 
     remove_copyright_comments < "$FILE" \
-    | replace \
-        'd1-service-generic/client' \
-        'd1-client-go/d1-generic' \
-    | replace \
-        'd1-service-generic/protobuf' \
-        'd1-client-go/d1-generic/protobuf' \
-    | replace \
-        'd1-service-storage/client' \
-        'd1-client-go/d1-storage' \
-    | replace \
-        'd1-service-storage/protobuf' \
-        'd1-client-go/d1-storage/protobuf'
+    | fix_go_imports
 }
 
 # copy and process client source files
@@ -133,7 +137,7 @@ for GO_FILE in $GO_FILES; do
     DST_PATH=$(realpath --canonicalize-missing "${CLIENT_PROTOBUF_DIR}/${GO_FILE}")
     DST_DIR=$(dirname "$DST_PATH")
     mkdir -p "$DST_DIR"
-    cp "$SRC_PATH" "$DST_PATH"
+    < "$SRC_PATH" fix_go_imports > "$DST_PATH"
 done
 
 cd "$CURRENT_DIR"
