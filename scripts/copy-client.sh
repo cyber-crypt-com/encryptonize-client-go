@@ -23,10 +23,11 @@ TARGET="d1-${CLIENT}"
 CLIENT_DIR=$(realpath "$TARGET")
 CLIENT_PROTOBUF_DIR=$CLIENT_DIR/protobuf
 
-# prepare target directories
-rm -rf "$CLIENT_DIR"
-mkdir "$CLIENT_DIR"
-mkdir "$CLIENT_PROTOBUF_DIR"
+# clean target directories
+CLIENT_FILES=$(find $CLIENT_DIR -not -name '*_example_test.go' -type f)
+for CLIENT_FILE in $CLIENT_FILES; do
+    rm $CLIENT_FILE
+done
 
 # checkout service repo
 rm -rf "$CHECKOUT_DIR"
