@@ -52,9 +52,10 @@ tests: build ## Run tests against dockerized servers
 # but we will keep this rule and related test resources for now.
 .PHONY: docker-generic-test
 docker-generic-test: docker-generic-test-up ## Run D1 Generic tests
-	USER_INFO=$$(docker exec d1-service-generic /d1-service-generic create-user rcudio  | tail -n 1) && \
-		export E2E_TEST_UID=$$(echo $$USER_INFO | jq -r ".user_id") && \
-		export E2E_TEST_PASS=$$(echo $$USER_INFO | jq -r ".password") && \
+	USER_INFO=$$(docker exec d1-service-generic /d1-service-generic create-user rcudgmi  | tail -n 1) && \
+		export D1_ENDPOINT="localhost:9000" && \
+		export D1_UID=$$(echo $$USER_INFO | jq -r ".user_id") && \
+		export D1_PASS=$$(echo $$USER_INFO | jq -r ".password") && \
 		go test -v ./d1-generic -count=1
 	@make docker-generic-test-down
 
@@ -72,9 +73,10 @@ docker-generic-test-down: ## Stop docker D1 Generic test environment
 # but we will keep this rule and related test resources for now.
 .PHONY: docker-storage-test
 docker-storage-test: docker-storage-test-up ## Run D1 Storage tests
-	USER_INFO=$$(docker exec d1-service-storage /d1-service-storage create-user rcudio  | tail -n 1) && \
-		export E2E_TEST_UID=$$(echo $$USER_INFO | jq -r ".user_id") && \
-		export E2E_TEST_PASS=$$(echo $$USER_INFO | jq -r ".password") && \
+	USER_INFO=$$(docker exec d1-service-storage /d1-service-storage create-user rcudgmi  | tail -n 1) && \
+		export D1_ENDPOINT="localhost:9000" && \
+		export D1_UID=$$(echo $$USER_INFO | jq -r ".user_id") && \
+		export D1_PASS=$$(echo $$USER_INFO | jq -r ".password") && \
 		go test -v ./d1-storage -count=1
 	@make docker-storage-test-down
 
