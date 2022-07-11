@@ -1,29 +1,46 @@
-# Go Client Library for CYBERCRYPT D1 and K1;
+# Go Client Packages for CYBERCRYPT D1;
 
-Go client libraries for
-* [CYBERCRYPT D1 Generic](https://github.com/cybercryptio/d1-service-generic)
+Go client packages for
 * [CYBERCRYPT D1 Storage](https://github.com/cybercryptio/d1-service-storage)
-* [CYBERCRYPT K1](https://github.com/cybercryptio/k1)
+* [CYBERCRYPT D1 Generic](https://github.com/cybercryptio/d1-service-generic)
 
-## Usage
-In order to use the client you will need credentials for the D1 Generic server.
-When setting up the server the first time, you need to bootstrap an initial user with credentials
-either through the executable as described
-[here](https://github.com/cybercryptio/d1-service-generic/blob/master/documentation/user_manual.md#bootstrapping-users).
-Subsequent users can be created through the API as described
-[here](https://github.com/cybercryptio/d1-service-generic/blob/master/documentation/user_manual.md#creating-users-through-the-api).
+## D1 Storage Client
 
-The easiest way to use the D1 Generic client is through the `NewGenericClientWR` constructor. The
-resulting client will automatically refresh the user's access token when it expires. A similar
-constructor, `NewStorageClientWR`, exists for D1 Storage. For specific code examples, see the
-[godocs](TODO).
+In order to use the D1 Storage client you will need credentials for a user. If you are using the
+built in Standalone ID Provider you can refer to the [Getting Started](https://docs.cybercrypt.io/storage-service/getting_started)
+guide for details on how to obtain these. If you are using an OIDC provider you will need to obtain
+and ID Token in the usual way.
 
-## Development
-Make targets are provided for various tasks. To get an overview run `make help`. To build the
-clients run `make build`.
+When using the Standalone ID Provider the easiest way to use the D1 Storage client is through the
+`NewStorageClientWR` constructor. The resulting client will automatically refresh the user's access
+token when it expires. For specific code examples, see the [godocs](https://pkg.go.dev/github.com/cybercryptio/d1-client-go).
 
-The D1 Generic and Storage clients can be tested against a docker deployment of the services by running
-`make docker-generic-test` and `make docker-storage-test`.
+When using an OIDC provider you must use the `NewStorageClient` constructor and provide the ID Token as [gRPC metadata](https://pkg.go.dev/google.golang.org/grpc/metadata) via the context:
+
+```go
+ctx = metadata.AppendToOutgoingContext(ctx, "authorization", "bearer " + idToken)
+client, _ := NewStorageClient(...)
+client.Store(ctx, ...)
+```
+
+## D1 Generic Client
+
+In order to use the D1 Generic client you will need credentials for a user. If you are using the
+built in Standalone ID Provider you can refer to the [Getting Started](https://docs.cybercrypt.io/generic-service/getting_started)
+guide for details on how to obtain these. If you are using an OIDC provider you will need to obtain
+and ID Token in the usual way.
+
+When using the Standalone ID Provider the easiest way to use the D1 Generic client is through the
+`NewGenericClientWR` constructor. The resulting client will automatically refresh the user's access
+token when it expires. For specific code examples, see the [godocs](https://pkg.go.dev/github.com/cybercryptio/d1-client-go).
+
+When using an OIDC provider you must use the `NewGenericClient` constructor and provide the ID Token as [gRPC metadata](https://pkg.go.dev/google.golang.org/grpc/metadata) via the context:
+
+```go
+ctx = metadata.AppendToOutgoingContext(ctx, "authorization", "bearer " + idToken)
+client, _ := NewGenericClient(...)
+client.Encrypt(ctx, ...)
+```
 
 ## License
 
