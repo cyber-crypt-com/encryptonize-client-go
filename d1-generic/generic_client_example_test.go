@@ -16,21 +16,26 @@ package client
 
 import (
 	"context"
+	"fmt"
 	"log"
+	"os"
+
+	"google.golang.org/grpc/metadata"
 
 	pbauthn "github.com/cybercryptio/d1-client-go/d1-generic/protobuf/authn"
 	pbgeneric "github.com/cybercryptio/d1-client-go/d1-generic/protobuf/generic"
-	"google.golang.org/grpc/metadata"
 )
 
-var uid string
-var password string
+var endpoint string = os.Getenv("D1_ENDPOINT")
+var uid string = os.Getenv("D1_UID")
+var password string = os.Getenv("D1_PASS")
+var certPath string = os.Getenv("D1_CERT")
 
 func ExampleNewGenericClient() {
 	ctx := context.Background()
 
 	// Create a new D1 Generic client, providing the hostname and a root CA certificate.
-	client, err := NewGenericClient("localhost:9000", "./ca.crt")
+	client, err := NewGenericClient(endpoint, certPath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -75,7 +80,11 @@ func ExampleNewGenericClient() {
 		log.Fatal(err)
 	}
 
-	log.Printf("%+v", decryptResponse)
+	fmt.Printf("plaintext:%q associated_data:%q",
+		decryptResponse.Plaintext,
+		decryptResponse.AssociatedData,
+	)
+	// Output: plaintext:"secret data" associated_data:"metadata"
 }
 
 func ExampleNewGenericClientWR() {
@@ -83,7 +92,7 @@ func ExampleNewGenericClientWR() {
 
 	// Create a new D1 Generic client, providing the hostname, a root CA certificate, and user
 	// credentials.
-	client, err := NewGenericClientWR("localhost:9000", "./ca.crt", "user id", "password")
+	client, err := NewGenericClientWR(endpoint, certPath, uid, password)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -113,5 +122,9 @@ func ExampleNewGenericClientWR() {
 		log.Fatal(err)
 	}
 
-	log.Printf("%+v", decryptResponse)
+	fmt.Printf("plaintext:%q associated_data:%q",
+		decryptResponse.Plaintext,
+		decryptResponse.AssociatedData,
+	)
+	// Output: plaintext:"secret data" associated_data:"metadata"
 }

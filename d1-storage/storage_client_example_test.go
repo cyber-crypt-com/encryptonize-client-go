@@ -16,7 +16,9 @@ package client
 
 import (
 	"context"
+	"fmt"
 	"log"
+	"os"
 
 	"google.golang.org/grpc/metadata"
 
@@ -24,14 +26,16 @@ import (
 	pbstorage "github.com/cybercryptio/d1-client-go/d1-storage/protobuf/storage"
 )
 
-var uid string
-var password string
+var endpoint string = os.Getenv("D1_ENDPOINT")
+var uid string = os.Getenv("D1_UID")
+var password string = os.Getenv("D1_PASS")
+var certPath string = os.Getenv("D1_CERT")
 
 func ExampleNewStorageClient() {
 	ctx := context.Background()
 
 	// Create a new D1 Storage client, providing the hostname and a root CA certificate.
-	client, err := NewStorageClient("localhost:9000", "./ca.crt")
+	client, err := NewStorageClient(endpoint, certPath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -74,7 +78,11 @@ func ExampleNewStorageClient() {
 		log.Fatal(err)
 	}
 
-	log.Printf("%+v", retrieveResponse)
+	fmt.Printf("plaintext:%q associated_data:%q",
+		retrieveResponse.Plaintext,
+		retrieveResponse.AssociatedData,
+	)
+	// Output: plaintext:"secret data" associated_data:"metadata"
 }
 
 func ExampleNewStorageClientWR() {
@@ -82,7 +90,7 @@ func ExampleNewStorageClientWR() {
 
 	// Create a new D1 Storage client, providing the hostname, a root CA certificate, and
 	// user credentials.
-	client, err := NewStorageClientWR("localhost:9000", "./ca.crt", "user id", "password")
+	client, err := NewStorageClientWR(endpoint, certPath, uid, password)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -110,5 +118,9 @@ func ExampleNewStorageClientWR() {
 		log.Fatal(err)
 	}
 
-	log.Printf("%+v", retrieveResponse)
+	fmt.Printf("plaintext:%q associated_data:%q",
+		retrieveResponse.Plaintext,
+		retrieveResponse.AssociatedData,
+	)
+	// Output: plaintext:"secret data" associated_data:"metadata"
 }
