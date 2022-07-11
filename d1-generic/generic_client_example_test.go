@@ -26,10 +26,10 @@ import (
 	pbgeneric "github.com/cybercryptio/d1-client-go/d1-generic/protobuf/generic"
 )
 
-var endpoint string = os.Getenv("D1_ENDPOINT")
-var uid string = os.Getenv("D1_UID")
-var password string = os.Getenv("D1_PASS")
-var certPath string = os.Getenv("D1_CERT")
+var endpoint = os.Getenv("D1_ENDPOINT")
+var uid = os.Getenv("D1_UID")
+var password = os.Getenv("D1_PASS")
+var certPath = os.Getenv("D1_CERT")
 
 func ExampleNewGenericClient() {
 	ctx := context.Background()

@@ -26,10 +26,10 @@ import (
 	pbstorage "github.com/cybercryptio/d1-client-go/d1-storage/protobuf/storage"
 )
 
-var endpoint string = os.Getenv("D1_ENDPOINT")
-var uid string = os.Getenv("D1_UID")
-var password string = os.Getenv("D1_PASS")
-var certPath string = os.Getenv("D1_CERT")
+var endpoint = os.Getenv("D1_ENDPOINT")
+var uid = os.Getenv("D1_UID")
+var password = os.Getenv("D1_PASS")
+var certPath = os.Getenv("D1_CERT")
 
 func ExampleNewStorageClient() {
 	ctx := context.Background()
