@@ -1,4 +1,4 @@
-# Go Client Packages for CYBERCRYPT D1;
+# Go Client Packages for CYBERCRYPT D1
 
 Go client packages for
 * [CYBERCRYPT D1 Storage](https://github.com/cybercryptio/d1-service-storage)
