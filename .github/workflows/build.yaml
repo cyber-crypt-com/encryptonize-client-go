@@ -1,6 +1,11 @@
 name: Integrations build and test
 
-on: push
+on:
+  push:
+    branches:
+      - '**'
+    tags-ignore:
+      - '**'
 
 env:
   # This tells Go to bypass the public proxies,
