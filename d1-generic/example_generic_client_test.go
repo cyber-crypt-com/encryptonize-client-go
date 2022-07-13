@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package client
+package client_test
 
 import (
 	"context"
@@ -20,25 +20,26 @@ import (
 	"log"
 	"os"
 
-	"google.golang.org/grpc/metadata"
-
+	client "github.com/cybercryptio/d1-client-go/d1-generic"
 	pbauthn "github.com/cybercryptio/d1-client-go/d1-generic/protobuf/authn"
 	pbgeneric "github.com/cybercryptio/d1-client-go/d1-generic/protobuf/generic"
+	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/metadata"
 )
 
 var endpoint = os.Getenv("D1_ENDPOINT")
 var uid = os.Getenv("D1_UID")
 var password = os.Getenv("D1_PASS")
-var certPath = os.Getenv("D1_CERT")
+var creds = insecure.NewCredentials()
 
-func ExampleNewGenericClient() {
-	ctx := context.Background()
-
-	// Create a new D1 Generic client, providing the hostname and a root CA certificate.
-	client, err := NewGenericClient(endpoint, certPath)
+func Example() {
+	// Create a new D1 Generic client providing the hostname, and optionally, the client connection level credentials.
+	client, err := client.NewGenericClient(endpoint, client.WithTransportCredentials(creds))
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	ctx := context.Background()
 
 	// Login the user with their credentials.
 	loginResponse, err := client.Authn.LoginUser(
@@ -52,50 +53,8 @@ func ExampleNewGenericClient() {
 		log.Fatal(err)
 	}
 
-	// Set access token for future calls
+	// Set access token for future calls.
 	ctx = metadata.AppendToOutgoingContext(ctx, "authorization", "bearer "+loginResponse.AccessToken)
-
-	// Encrypt sensitive data.
-	encryptResponse, err := client.Generic.Encrypt(
-		ctx,
-		&pbgeneric.EncryptRequest{
-			Plaintext:      []byte("secret data"),
-			AssociatedData: []byte("metadata"),
-		},
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Decrypt the response.
-	decryptResponse, err := client.Generic.Decrypt(
-		ctx,
-		&pbgeneric.DecryptRequest{
-			ObjectId:       encryptResponse.ObjectId,
-			Ciphertext:     encryptResponse.Ciphertext,
-			AssociatedData: encryptResponse.AssociatedData,
-		},
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Printf("plaintext:%q associated_data:%q",
-		decryptResponse.Plaintext,
-		decryptResponse.AssociatedData,
-	)
-	// Output: plaintext:"secret data" associated_data:"metadata"
-}
-
-func ExampleNewGenericClientWR() {
-	ctx := context.Background()
-
-	// Create a new D1 Generic client, providing the hostname, a root CA certificate, and user
-	// credentials.
-	client, err := NewGenericClientWR(endpoint, certPath, uid, password)
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	// Encrypt sensitive data.
 	encryptResponse, err := client.Generic.Encrypt(
