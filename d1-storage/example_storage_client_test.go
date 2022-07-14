@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package client
+package client_test
 
 import (
 	"context"
@@ -20,25 +20,27 @@ import (
 	"log"
 	"os"
 
-	"google.golang.org/grpc/metadata"
-
+	gclient "github.com/cybercryptio/d1-client-go/d1-generic"
 	pbauthn "github.com/cybercryptio/d1-client-go/d1-generic/protobuf/authn"
+	client "github.com/cybercryptio/d1-client-go/d1-storage"
 	pbstorage "github.com/cybercryptio/d1-client-go/d1-storage/protobuf/storage"
+	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/metadata"
 )
 
 var endpoint = os.Getenv("D1_ENDPOINT")
 var uid = os.Getenv("D1_UID")
 var password = os.Getenv("D1_PASS")
-var certPath = os.Getenv("D1_CERT")
+var creds = insecure.NewCredentials()
 
-func ExampleNewStorageClient() {
-	ctx := context.Background()
-
-	// Create a new D1 Storage client, providing the hostname and a root CA certificate.
-	client, err := NewStorageClient(endpoint, certPath)
+func Example() {
+	// Create a new D1 Storage client providing the hostname, and optionally, the client connection level credentials.
+	client, err := client.NewStorageClient(endpoint, gclient.WithTransportCredentials(creds))
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	ctx := context.Background()
 
 	// Login the user with their credentials.
 	loginResponse, err := client.Authn.LoginUser(
@@ -54,46 +56,6 @@ func ExampleNewStorageClient() {
 
 	// Set access token for future calls
 	ctx = metadata.AppendToOutgoingContext(ctx, "authorization", "bearer "+loginResponse.AccessToken)
-
-	// Store sensitive data in encrypted form.
-	storeResponse, err := client.Storage.Store(
-		ctx,
-		&pbstorage.StoreRequest{
-			Plaintext:      []byte("secret data"),
-			AssociatedData: []byte("metadata"),
-		},
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Retrieve the stored data.
-	retrieveResponse, err := client.Storage.Retrieve(
-		ctx,
-		&pbstorage.RetrieveRequest{
-			ObjectId: storeResponse.ObjectId,
-		},
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Printf("plaintext:%q associated_data:%q",
-		retrieveResponse.Plaintext,
-		retrieveResponse.AssociatedData,
-	)
-	// Output: plaintext:"secret data" associated_data:"metadata"
-}
-
-func ExampleNewStorageClientWR() {
-	ctx := context.Background()
-
-	// Create a new D1 Storage client, providing the hostname, a root CA certificate, and
-	// user credentials.
-	client, err := NewStorageClientWR(endpoint, certPath, uid, password)
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	// Store sensitive data in encrypted form.
 	storeResponse, err := client.Storage.Store(
