@@ -20,7 +20,7 @@ trap finish EXIT
 REPO="https://github.com/cybercryptio/d1-service-${CLIENT}.git"
 TARGET="d1-${CLIENT}"
 
-CLIENT_DIR=$(realpath "$TARGET")
+CLIENT_DIR="$CURRENT_DIR/$TARGET"
 CLIENT_PROTOBUF_DIR=$CLIENT_DIR/protobuf
 
 # remove previously copied files
@@ -114,24 +114,22 @@ fix_proto_source() {
 
 # copy and process client source files
 cd "${SRC_DIR}/client"
-GO_FILES=$(find . -name \*.go)
+GO_FILES=$(find -name \*.go)
 for GO_FILE in $GO_FILES; do
-    SRC_PATH=$(realpath "$GO_FILE")
-    DST_PATH=$(realpath --canonicalize-missing "${CLIENT_DIR}/${GO_FILE}")
+    DST_PATH="${CLIENT_DIR}/${GO_FILE}"
     DST_DIR=$(dirname "$DST_PATH")
     mkdir -p "$DST_DIR"
-    fix_client_source < "$SRC_PATH" > "$DST_PATH"
+    fix_client_source < "$GO_FILE" > "$DST_PATH"
 done
 
 # copy and process protobuf source files
 cd "${SRC_DIR}/protobuf"
-GO_FILES=$(find . -name \*.go)
+GO_FILES=$(find -name \*.go)
 for GO_FILE in $GO_FILES; do
-    SRC_PATH=$(realpath "$GO_FILE")
-    DST_PATH=$(realpath --canonicalize-missing "${CLIENT_PROTOBUF_DIR}/${GO_FILE}")
+    DST_PATH="${CLIENT_PROTOBUF_DIR}/${GO_FILE}"
     DST_DIR=$(dirname "$DST_PATH")
     mkdir -p "$DST_DIR"
-    fix_proto_source < "$SRC_PATH" > "$DST_PATH"
+    fix_proto_source < "$GO_FILE" > "$DST_PATH"
 done
 
 # Fix source code formatting
