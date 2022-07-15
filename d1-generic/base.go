@@ -22,7 +22,7 @@ package client
 import (
 	pbauthn "github.com/cybercryptio/d1-client-go/d1-generic/protobuf/authn"
 	pbauthz "github.com/cybercryptio/d1-client-go/d1-generic/protobuf/authz"
-	pbsearchable "github.com/cybercryptio/d1-client-go/d1-generic/protobuf/searchable"
+	pbindex "github.com/cybercryptio/d1-client-go/d1-generic/protobuf/index"
 	pbversion "github.com/cybercryptio/d1-client-go/d1-generic/protobuf/version"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -36,7 +36,7 @@ type BaseClient struct {
 	Authn                pbauthn.AuthnClient
 	Authz                pbauthz.AuthzClient
 	Health               grpc_health_v1.HealthClient
-	Searchable           pbsearchable.SearchableClient
+	Index 	             pbindex.IndexClient
 	Connection           *grpc.ClientConn
 	transportCredentials credentials.TransportCredentials
 	perRPCCredentials    credentials.PerRPCCredentials
@@ -70,7 +70,7 @@ func NewBaseClient(endpoint string, opts ...Option) (BaseClient, error) {
 	baseClient.Authn = pbauthn.NewAuthnClient(baseClient.Connection)
 	baseClient.Authz = pbauthz.NewAuthzClient(baseClient.Connection)
 	baseClient.Health = grpc_health_v1.NewHealthClient(baseClient.Connection)
-	baseClient.Searchable = pbsearchable.NewSearchableClient(baseClient.Connection)
+	baseClient.Index = pbindex.NewIndexClient(baseClient.Connection)
 
 	return baseClient, nil
 }
