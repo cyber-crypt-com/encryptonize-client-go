@@ -114,7 +114,7 @@ fix_proto_source() {
 
 # copy and process client source files
 cd "${SRC_DIR}/client"
-GO_FILES=$(find -name \*.go)
+GO_FILES=$(find . -name \*.go)
 for GO_FILE in $GO_FILES; do
     DST_PATH="${CLIENT_DIR}/${GO_FILE}"
     DST_DIR=$(dirname "$DST_PATH")
@@ -124,7 +124,7 @@ done
 
 # copy and process protobuf source files
 cd "${SRC_DIR}/protobuf"
-GO_FILES=$(find -name \*.go)
+GO_FILES=$(find . -name \*.go)
 for GO_FILE in $GO_FILES; do
     DST_PATH="${CLIENT_PROTOBUF_DIR}/${GO_FILE}"
     DST_DIR=$(dirname "$DST_PATH")
