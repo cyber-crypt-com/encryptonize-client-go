@@ -14,7 +14,8 @@
 
 version: '3.9'
 
-x-config: &config
+x-config:
+  &config
   D1_SERVICE_INSECURE: "1"
 
   # S3 config
@@ -28,7 +29,7 @@ x-config: &config
 
 services:
   d1-service-storage:
-    image: ghcr.io/cybercryptio/d1-service-storage:v0.1.26
+    image: ghcr.io/cybercryptio/d1-service-storage:v0.1.27-ci.35
     container_name: d1-service-storage
     environment:
       <<: *config
@@ -46,7 +47,7 @@ services:
       - storage
 
   d1-service-generic:
-    image: ghcr.io/cybercryptio/d1-service-generic:v0.1.48
+    image: ghcr.io/cybercryptio/d1-service-generic:v0.1.49-ci.48
     container_name: d1-service-generic
     environment:
       <<: *config
@@ -75,7 +76,13 @@ services:
       MINIO_DEFAULT_BUCKETS: *storage_bucket
     command: server /data
     healthcheck:
-      test: ["CMD", "curl", "-f", "localhost:9000/minio/health/live"]
+      test:
+        [
+          "CMD",
+          "curl",
+          "-f",
+          "localhost:9000/minio/health/live"
+        ]
       timeout: 30s
       interval: 5s
       retries: 5
