@@ -91,9 +91,9 @@ docker-storage-test-down: ## Stop docker D1 Storage test environment
 
 .PHONY: docker-k1-test
 docker-k1-test: docker-k1-test-up ## Run Key Server tests
-	KS_RESPONSE=$$(docker exec key-server /k1 newKeySet 2> /dev/null) && \
+	KS_RESPONSE=$$(docker exec k1 /k1 newKeySet 2> /dev/null) && \
 		KS_ID=$$(echo $$KS_RESPONSE | jq -r ".KsID") && \
-		KIK_RESPONSE=$$(docker exec key-server /k1 newKik --ksid=$$KS_ID 2> /dev/null) && \
+		KIK_RESPONSE=$$(docker exec k1 /k1 newKik --ksid=$$KS_ID 2> /dev/null) && \
 		export E2E_TEST_KIK_ID=$$(echo $$KIK_RESPONSE | jq -r ".KikID") && \
 		export E2E_TEST_KIK=$$(echo $$KIK_RESPONSE | jq -r ".Kik") && \
 		go test -v ./k1 -count=1
@@ -101,7 +101,8 @@ docker-k1-test: docker-k1-test-up ## Run Key Server tests
 
 .PHONY: docker-k1-test-up
 docker-k1-test-up: ## Start docker Key Server test environment
-	docker-compose -f test/k1/compose.yaml up -d
+	cd test/k1 && \
+	docker-compose up -d
 
 .PHONY: docker-k1-test-down
 docker-k1-test-down: ## Stop docker Key Server test environment

@@ -1,0 +1,66 @@
+# Server configuration
+[server]
+# The address of this instance
+endpoint = "localhost:50051"
+
+# Storage configuration
+[storage]
+# The SQL user that will own the client session.
+username = "keyserver"
+# Password for the SQL user.
+password = "keyserver"
+# The host name or address of an SQL database.
+host = "localhost"
+# The port number of the SQL interface.
+port = "5432"
+# The name of the database to connect to.
+database = "keyserver"
+# The TLS mode to use: disable, require, verify-ca, or verify-full.
+tlsmode = "disable"
+# Path to the CA certificate, when tlsmode is not "disable".
+tlscacert = ""
+# Path to the client certificate, when tlsmode is not "disable".
+stlscert = ""
+# Path to the client private key, when tlsmode is not "disable".
+tlskey = ""
+# Schema file executed on startup.
+schema = "./storage/ks_storage.sql"
+
+# Key Provider configuration
+[keyprovider]
+
+    [keyprovider.standalone]
+    # Key for key wrapping initialization in memory.
+    kwpinitkey = "0000000000000000000000000000000000000000000000000000000000000000"
+
+    # [keyprovider.gcloudkms]
+    # # The location that supports HSM protection level, used only for key generation.
+    # location = ""
+    # # The resource name of CryptoKeyVersion to use for symmetric encryption/decryption.
+    # keyname = ""
+
+    # [keyprovider.azurekeyvault]
+    # # Unique Key Vault URI
+    # vaulturi = ""
+    # # Name of the key created in Azure Key Vault (as HSM - Premium tier). Must allow `wrap key` and `unwrap key` operations.
+    # keyname = ""
+    # # Version of the key specified above. Optional, will use current version if not specified.
+    # keyversion = ""
+
+    # [keyprovider.awskms]
+    # # The region the SDK will use to make AWS API requests to.
+    # region = ""
+    # # Identifies the KMS key to use in the wrapping operation.
+    # keyid = ""
+
+    # [keyprovider.kmip]
+    # Server endpoint as "host:port".
+	# endpoint = ""
+	# Path to CA certificate for TLS config.
+	# cacertpath = ""
+    # Path to client certificate for TLS config.
+    # certpath = ""
+    # Path to client private key for TLS config.
+    # keypath = ""
+	# Identifies the key to use in the wrapping operation.
+	# keyid = ""

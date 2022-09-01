@@ -17,36 +17,29 @@ version: "3.8"
 x-service-variables: &service-variables
   KEYSERVER_INSECURE: "1"
 
-  # Key Server configuration
-  KEYSERVER_KEYSERVER_ENDPOINT: "localhost:50051"
-
-  # Key Provider KWP Init Key
-  KEYSERVER_KEYPROVIDER_STANDALONE_KWPINITKEY: "0000000000000000000000000000000000000000000000000000000000000000"
-
   # Storage
-  KEYSERVER_STORAGE_USERNAME: &ks_db_user "keyserver"
-  KEYSERVER_STORAGE_PASSWORD: &ks_db_pass "keyserver"
-  KEYSERVER_STORAGE_HOST: "keyserver-db"
-  KEYSERVER_STORAGE_PORT: "5432"
-  KEYSERVER_STORAGE_DATABASE: &ks_db_name "keyserver"
-  KEYSERVER_STORAGE_SSLMODE: "disable"
-  KEYSERVER_STORAGE_SCHEMA: "./storage/ks_storage.sql"
+  K1_STORAGE_USERNAME: &ks_db_user "keyserver"
+  K1_STORAGE_PASSWORD: &ks_db_pass "keyserver"
+  K1_STORAGE_DATABASE: &ks_db_name "keyserver"
+  K1_STORAGE_HOST: "postgres"
 
 services:
-  key-server:
-    image: ghcr.io/cybercryptio/k1:v0.1.19
-    container_name: key-server
+  k1:
+    image: cybercryptio/k1:v1.0.0
+    container_name: k1
     environment:
       <<: *service-variables
+    volumes:
+      - ${PWD}/config.toml:/config.toml
     ports:
       - 50051:50051
     depends_on:
-      keyserver-db:
+      postgres:
         condition: service_healthy
 
-  keyserver-db:
+  postgres:
     image: postgres:alpine3.15
-    container_name: keyserver-db
+    container_name: postgres
     environment:
       POSTGRES_USER: *ks_db_user
       POSTGRES_PASSWORD: *ks_db_pass
