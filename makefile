@@ -45,7 +45,6 @@ lint: ## Lint the codebase
 tests: build ## Run tests against dockerized servers
 	@make docker-generic-test
 	@make docker-storage-test
-	@make docker-k1-test
 
 # TODO: This is a temporary workaround to prevent the build from breaking.
 # There are currently no actual tests in ./d1-generic,
@@ -88,25 +87,6 @@ docker-storage-test-up: ## Start docker D1 Storage test environment
 .PHONY: docker-storage-test-down
 docker-storage-test-down: ## Stop docker D1 Storage test environment
 	docker-compose --profile storage -f test/d1/compose.yaml down -v
-
-.PHONY: docker-k1-test
-docker-k1-test: docker-k1-test-up ## Run Key Server tests
-	KS_RESPONSE=$$(docker exec k1 /k1 newKeySet 2> /dev/null) && \
-		KS_ID=$$(echo $$KS_RESPONSE | jq -r ".KsID") && \
-		KIK_RESPONSE=$$(docker exec k1 /k1 newKik --ksid=$$KS_ID 2> /dev/null) && \
-		export E2E_TEST_KIK_ID=$$(echo $$KIK_RESPONSE | jq -r ".KikID") && \
-		export E2E_TEST_KIK=$$(echo $$KIK_RESPONSE | jq -r ".Kik") && \
-		go test -v ./k1 -count=1
-	@make docker-k1-test-down
-
-.PHONY: docker-k1-test-up
-docker-k1-test-up: ## Start docker Key Server test environment
-	cd test/k1 && \
-	docker-compose up -d
-
-.PHONY: docker-k1-test-down
-docker-k1-test-down: ## Stop docker Key Server test environment
-	docker-compose -f test/k1/compose.yaml down -v
 
 .PHONY: copy-generic-client
 copy-generic-client: ## Copy D1 Generic client source code into this repo
