@@ -40,54 +40,7 @@ lint: ## Lint the codebase
 	go mod tidy
 	golangci-lint run -E gosec,asciicheck,bodyclose,gocyclo,unconvert,gocognit,misspell,revive,whitespace --timeout 5m
 
-##### Test targets #####
-.PHONY: tests
-tests: build ## Run tests against dockerized servers
-	@make docker-generic-test
-	@make docker-storage-test
-
-# TODO: This is a temporary workaround to prevent the build from breaking.
-# There are currently no actual tests in ./d1-generic,
-# but we will keep this rule and related test resources for now.
-.PHONY: docker-generic-test
-docker-generic-test: docker-generic-test-up ## Run D1 Generic tests
-	USER_INFO=$$(docker exec d1-service-generic /d1-service-generic create-user rcudgmi  | tail -n 1) && \
-		export D1_ENDPOINT="localhost:9000" && \
-		export D1_UID=$$(echo $$USER_INFO | jq -r ".user_id") && \
-		export D1_PASS=$$(echo $$USER_INFO | jq -r ".password") && \
-		go test -v ./d1-generic -count=1
-	@make docker-generic-test-down
-
-.PHONY: docker-generic-test-up
-docker-generic-test-up: ## Start docker D1 Generic test environment
-	cd test/d1 && \
-	docker-compose --profile generic up -d
-
-.PHONY: docker-generic-test-down
-docker-generic-test-down: ## Stop docker D1 Generic test environment
-	docker-compose --profile generic -f test/d1/compose.yaml down -v
-
-# TODO: This is a temporary workaround to prevent the build from breaking.
-# There are currently no actual tests in ./d1-storage,
-# but we will keep this rule and related test resources for now.
-.PHONY: docker-storage-test
-docker-storage-test: docker-storage-test-up ## Run D1 Storage tests
-	USER_INFO=$$(docker exec d1-service-storage /d1-service-storage create-user rcudgmi  | tail -n 1) && \
-		export D1_ENDPOINT="localhost:9000" && \
-		export D1_UID=$$(echo $$USER_INFO | jq -r ".user_id") && \
-		export D1_PASS=$$(echo $$USER_INFO | jq -r ".password") && \
-		go test -v ./d1-storage -count=1
-	@make docker-storage-test-down
-
-.PHONY: docker-storage-test-up
-docker-storage-test-up: ## Start docker D1 Storage test environment
-	cd test/d1 && \
-	docker-compose --profile storage up -d
-
-.PHONY: docker-storage-test-down
-docker-storage-test-down: ## Stop docker D1 Storage test environment
-	docker-compose --profile storage -f test/d1/compose.yaml down -v
-
+##### Copy targets #####
 .PHONY: copy-generic-client
 copy-generic-client: ## Copy D1 Generic client source code into this repo
 	$(call check_defined, VERSION, Usage: make copy-generic-client VERSION=<version>)
