@@ -50,3 +50,8 @@ copy-generic-client: ## Copy D1 Generic client source code into this repo
 copy-storage-client: ## Copy D1 Storage client source code into this repo
 	$(call check_defined, VERSION, Usage: make copy-storage-client VERSION=<version>)
 	./scripts/copy-client.sh storage ${VERSION}
+
+.PHONY: copy-k1-client
+copy-k1-client: ## Copy K1 client source code into this repo
+	$(call check_defined, VERSION, Usage: make copy-k1-client VERSION=<version>)
+	./scripts/copy-client.sh k1 ${VERSION}

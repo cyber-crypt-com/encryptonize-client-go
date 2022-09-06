@@ -17,8 +17,20 @@ finish() {
 }
 trap finish EXIT
 
-REPO="https://github.com/cybercryptio/d1-service-${CLIENT}.git"
-TARGET="d1-${CLIENT}"
+# Map input name to repository
+declare -A REPO_MAP
+REPO_MAP[generic]="d1-service-generic"
+REPO_MAP[storage]="d1-service-storage"
+REPO_MAP[k1]="k1"
+
+# Map input name to folder in this repository
+declare -A TARGET_MAP
+TARGET_MAP[generic]="d1-generic"
+TARGET_MAP[storage]="d1-storage"
+TARGET_MAP[k1]="k1"
+
+REPO="https://github.com/cybercryptio/${REPO_MAP[$CLIENT]}.git"
+TARGET="${TARGET_MAP[$CLIENT]}"
 
 CLIENT_DIR=$(realpath "$TARGET")
 CLIENT_PROTOBUF_DIR=$CLIENT_DIR/protobuf
@@ -63,6 +75,8 @@ fix_go_imports() {
         $(sed_replace 'd1-service-generic/protobuf' 'd1-client-go/d1-generic/protobuf'  ) ;
         $(sed_replace 'd1-service-storage/client'   'd1-client-go/d1-storage'           ) ;
         $(sed_replace 'd1-service-storage/protobuf' 'd1-client-go/d1-storage/protobuf'  ) ;
+        $(sed_replace 'k1/client'                   'd1-client-go/k1'                   ) ;
+        $(sed_replace 'k1/protobuf'                 'd1-client-go/k1/protobuf'          ) ;
     "
 }
 
