@@ -7,7 +7,7 @@ Go client packages for
 ## D1 Storage Client
 
 In order to use the D1 Storage client you will need credentials for a user. If you are using the
-built in Standalone ID Provider you can refer to the [Getting Started](https://docs.cybercrypt.io/storage-service/getting_started)
+built in Standalone ID Provider you can refer to the [Getting Started](https://github.com/cybercryptio/d1-service-storage/blob/master/documentation/getting_started.md)
 guide for details on how to obtain these. If you are using an OIDC provider you will need to obtain
 and ID Token in the usual way.
 
@@ -34,7 +34,7 @@ For more detailed explanations and examples, see the [godoc](https://pkg.go.dev/
 ## D1 Generic Client
 
 In order to use the D1 Generic client you will need credentials for a user. If you are using the
-built in Standalone ID Provider you can refer to the [Getting Started](https://docs.cybercrypt.io/generic-service/getting_started)
+built in Standalone ID Provider you can refer to the [Getting Started](https://github.com/cybercryptio/d1-service-generic/blob/master/documentation/getting_started.md)
 guide for details on how to obtain these. If you are using an OIDC provider you will need to obtain
 and ID Token in the usual way.
 
