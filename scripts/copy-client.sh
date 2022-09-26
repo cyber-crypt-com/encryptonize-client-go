@@ -71,12 +71,12 @@ remove_copyright_comments() {
 # to the client repo, and writes the result to STDOUT.
 fix_go_imports() {
     sed -e "
-        $(sed_replace 'd1-service-generic/client'   'd1-client-go/d1-generic'           ) ;
-        $(sed_replace 'd1-service-generic/protobuf' 'd1-client-go/d1-generic/protobuf'  ) ;
-        $(sed_replace 'd1-service-storage/client'   'd1-client-go/d1-storage'           ) ;
-        $(sed_replace 'd1-service-storage/protobuf' 'd1-client-go/d1-storage/protobuf'  ) ;
-        $(sed_replace 'k1/client'                   'd1-client-go/k1'                   ) ;
-        $(sed_replace 'k1/protobuf'                 'd1-client-go/k1/protobuf'          ) ;
+        $(sed_replace 'd1-service-generic/v2/client'   'd1-client-go/v2/d1-generic'           ) ;
+        $(sed_replace 'd1-service-generic/v2/protobuf' 'd1-client-go/v2/d1-generic/protobuf'  ) ;
+        $(sed_replace 'd1-service-storage/v2/client'   'd1-client-go/v2/d1-storage'           ) ;
+        $(sed_replace 'd1-service-storage/v2/protobuf' 'd1-client-go/v2/d1-storage/protobuf'  ) ;
+        $(sed_replace 'k1/client'                      'd1-client-go/v2/k1'                   ) ;
+        $(sed_replace 'k1/protobuf'                    'd1-client-go/v2/k1/protobuf'          ) ;
     "
 }
 
