@@ -1,4 +1,4 @@
-module github.com/cybercryptio/d1-client-go
+module github.com/cybercryptio/d1-client-go/v2
 
 go 1.18
 
